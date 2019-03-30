@@ -7,12 +7,12 @@ insert into country (name) values ('Украина');
 
 
 -- chat
-insert into chat (chat_id,name, description, avatar_small, avatar_full, member_num)
-values (1,'one','btw 2p','','',3);
-insert into chat (chat_id,name, description, avatar_small, avatar_full, member_num)
-values (2,'two','btw 2p','','',4);
-insert into chat (chat_id,name, description, avatar_small, avatar_full, member_num)
-values (3,'three','btw 2p','','',5);
+insert into chat (chat_id,name, description)
+values (1,'one','btw 2p');
+insert into chat (chat_id,name, description)
+values (2,'two','btw 2p');
+insert into chat (chat_id,name, description)
+values (3,'three','btw 2p');
 
 -- human
 insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,likes,dislikes,avatar_small,avatar_full,banned,country_id)
@@ -124,13 +124,13 @@ values ('Дизлайк из ВК',FALSE,'this is anсient artefact like a disli
 
 --auction
 insert into auction (artifact_id,price_old,price_new,raiser,bet_time,start_time,end_time)
-values (1,555,600,1,now(),'2018-10-15'::timestamp,'2018-12-17'::timestamp);
+values (1,555,600,1,now(),'2018-10-15'::timestamp,'2019-12-17'::timestamp);
 insert into auction (artifact_id,price_old,price_new,raiser,bet_time,start_time,end_time)
-values (2,666,700,2,now(),'2018-11-15'::timestamp,'2018-12-17'::timestamp);
+values (2,666,700,2,now(),'2018-11-15'::timestamp,'2019-12-17'::timestamp);
 insert into auction (artifact_id,price_old,price_new,raiser,bet_time,start_time,end_time)
-values (4,10000,20000,3,'2018-11-15'::timestamp,'2018-11-15'::timestamp,'2018-11-17'::timestamp);
+values (4,10000,20000,3,'2018-11-15'::timestamp,'2018-11-15'::timestamp,'2019-11-17'::timestamp);
 insert into auction (artifact_id,price_old,price_new,raiser,bet_time,start_time,end_time)
-values (3,NULL,800,NULL,NULL,now(),'2018-12-17'::timestamp);
+values (3,NULL,800,NULL,NULL,now(),'2019-12-17'::timestamp);
 
 --subscription_auction
 insert into subscription_auction (human_id, auction_id) values (1,2);
@@ -155,14 +155,14 @@ insert into route (route_id) values (3);
 insert into route (route_id) values (4);
 
 --stay, то есть остановка, превал
-insert into stay (route_id,excavations,start_date,end_date,latitude,longtitude) values (1, FALSE, now(), now() + '1 day', 50, -100);
-insert into stay (route_id,excavations,start_date,end_date,latitude,longtitude) values (1, TRUE, now() + '2 days', now() + '4 days', 52, -100);
-insert into stay (route_id,excavations,start_date,end_date,latitude,longtitude) values (1, FALSE, now() + '5 days', now() + '9 days', 50, -100);
-insert into stay (route_id,excavations,start_date,end_date,latitude,longtitude) values (2, TRUE, now() + '1 day', now() + '3 days', 51, -100);
-insert into stay (route_id,excavations,start_date,end_date,latitude,longtitude) values (2, TRUE, now() + '5 days', now() + '6 days', 52, -100);
-insert into stay (route_id,excavations,start_date,end_date,latitude,longtitude) values (2, FALSE, now() + '6 days', now() + '7 days', 53, -101);
-insert into stay (route_id,excavations,start_date,end_date,latitude,longtitude) values (2, TRUE, now() + '7 days', now() + '9 days', 54, -101);
-insert into stay (route_id,excavations,start_date,end_date,latitude,longtitude) values (2, FALSE, now() + '11 days', now() + '15 days', 54, -99);
+insert into stay (route_id,start_date,end_date,latitude,longtitude) values (1, now(), now() + '1 day', 50, -100);
+insert into stay (route_id,start_date,end_date,latitude,longtitude) values (1, now() + '2 days', now() + '4 days', 52, -100);
+insert into stay (route_id,start_date,end_date,latitude,longtitude) values (1, now() + '5 days', now() + '9 days', 50, -100);
+insert into stay (route_id,start_date,end_date,latitude,longtitude) values (2, now() + '1 day', now() + '3 days', 51, -100);
+insert into stay (route_id,start_date,end_date,latitude,longtitude) values (2, now() + '5 days', now() + '6 days', 52, -100);
+insert into stay (route_id,start_date,end_date,latitude,longtitude) values (2, now() + '6 days', now() + '7 days', 53, -101);
+insert into stay (route_id,start_date,end_date,latitude,longtitude) values (2, now() + '7 days', now() + '9 days', 54, -101);
+insert into stay (route_id,start_date,end_date,latitude,longtitude) values (2, now() + '11 days', now() + '15 days', 54, -99);
 --?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 
 
@@ -174,8 +174,8 @@ values ('какая-то забаненная','в горы в поисках Й
 --?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 
 
---excavation_result
-insert into excavation_result (artifact_id, excavations, human_id, _date) VALUES (1,1,3,'2018-02-10');
+--expedition_result
+insert into expedition_result (artifact_id, human_id, _date) VALUES (1,3,'2018-02-10');
 
 
 --participation_expedition
@@ -189,52 +189,3 @@ insert into subscription_expedition (human_id, expedition_id) VALUES (6,1);
 --donation
 insert into donation (human_id,expedition_id,time,amount) values (6,1,'2018-05-12',200);
 insert into donation (human_id,expedition_id,time,amount) values (6,1,'2018-05-12 01:00',400);
-
-------------------------------------------------------------------------------------------------------------------------
-
---record
-insert into record (type,human_id,time) values ('purchased',1,'2018-02-12');
-insert into record (type,human_id,time) values ('sold',2,'2018-03-12');
-insert into record (type,human_id,time) values ('participation',3,'2018-04-12');
-insert into record (type,human_id,time) values ('donation',4,'2018-05-12');
-
---records
-insert into record_purchased (record_id,price,artifact_id) values (1,2000,1);
-
-
-insert into record_sold (record_id,price,artifact_id) values (2,3000,1);
-
-
-insert into record_participation (record_id,participation_expedition_id) values (3,1);
-
-
-insert into record_donation (record_id,donation_id) values (4,1);
-
---???????????????????????????????????????????
-------------------------------------------------------------------------------------------------------------------------
-
---complaint
-
-insert into complaint (type,message_id) values ('human',3);
-insert into complaint (type,message_id) values ('artifact',2);
-insert into complaint (type,message_id) values ('expedition',4);
-
---complaints
-
-insert into complaint_human (complaint_id, human_id) VALUES (1,6);
-
-
-insert into complaint_artifact (complaint_id, artifact_id) values (2,2);
-
-
-insert into complaint_expedition (complaint_id, expedition_id) VALUES (3,1);
-
-
-
-
-
-
-
-
-
-

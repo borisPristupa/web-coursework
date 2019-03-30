@@ -7,10 +7,7 @@ CREATE TABLE IF NOT EXISTS country (
 CREATE TABLE IF NOT EXISTS chat (
 	chat_id serial PRIMARY KEY,
 	name text NOT NULL CHECK (name != ''),
-	description text NOT NULL DEFAULT '',
-	avatar_small bytea,
-	avatar_full bytea,
-	member_num int CHECK (member_num > 2)
+	description text NOT NULL DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS human (
@@ -129,7 +126,6 @@ CREATE TABLE IF NOT EXISTS route (
 CREATE TABLE IF NOT EXISTS stay (
 	stay_id serial PRIMARY KEY,
 	route_id int NOT NULL REFERENCES route ON UPDATE CASCADE ON DELETE CASCADE,
-	excavations boolean NOT NULL DEFAULT FALSE,
 	start_date date NOT NULL,
 	end_date date NOT NULL CHECK (end_date > start_date),
 	latitude float NOT NULL CHECK (latitude BETWEEN -90 AND 90), -- широта
@@ -151,9 +147,8 @@ CREATE TABLE IF NOT EXISTS expedition (
 	head int NOT NULL REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS excavation_result (
+CREATE TABLE IF NOT EXISTS expedition_result (
 	artifact_id int PRIMARY KEY REFERENCES artifact ON UPDATE CASCADE ON DELETE CASCADE,
-	excavations int NOT NULL REFERENCES stay ON UPDATE CASCADE ON DELETE CASCADE,
 	human_id int NOT NULL REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE,
 	_date date
 );
@@ -177,77 +172,6 @@ CREATE TABLE IF NOT EXISTS donation (
 	expedition_id int NOT NULL REFERENCES expedition ON UPDATE CASCADE ON DELETE CASCADE,
 	time timestamp NOT NULL,
 	amount numeric NOT NULL CHECK (amount > 0::numeric)
-);
-
-
--- ЗАПИСИ В ИСТОРИИ humanА В ЛИЧНОМ КАБИНЕТЕ
-CREATE TYPE record_type AS ENUM ('purchased', 'sold', 'participation', 'donation');
-
-CREATE TABLE IF NOT EXISTS record (
-	record_id serial PRIMARY KEY,
-	type record_type NOT NULL,
-	human_id int NOT NULL REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE,
-	time timestamp NOT NULL
-);
-
-CREATE OR REPLACE FUNCTION consistent_record_type(record_type, int)
-RETURNS boolean AS $$ SELECT type = $1 FROM record WHERE record_id = $2 $$ LANGUAGE SQL;
-
-CREATE TABLE IF NOT EXISTS record_purchased (
-	record_id serial PRIMARY KEY REFERENCES record ON UPDATE CASCADE ON DELETE CASCADE,
-	price numeric NOT NULL CHECK (price >= 0::numeric),
-	artifact_id int NOT NULL REFERENCES artifact ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT record_type_purchased CHECK (consistent_record_type('purchased', record_id))
-);
-
-CREATE TABLE IF NOT EXISTS record_sold (
-	record_id serial PRIMARY KEY REFERENCES record ON UPDATE CASCADE ON DELETE CASCADE,
-	price numeric NOT NULL CHECK (price >= 0::numeric),
-	artifact_id int NOT NULL REFERENCES artifact ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT record_type_sold CHECK (consistent_record_type('sold', record_id))
-);
-
-CREATE TABLE IF NOT EXISTS record_participation (
-	record_id serial PRIMARY KEY REFERENCES record ON UPDATE CASCADE ON DELETE CASCADE,
-	participation_expedition_id int NOT NULL REFERENCES participation_expedition ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT record_type_participation CHECK (consistent_record_type('participation', record_id))
-);
-
-CREATE TABLE IF NOT EXISTS record_donation (
-	record_id serial PRIMARY KEY REFERENCES record ON UPDATE CASCADE ON DELETE CASCADE,
-	donation_id int NOT NULL REFERENCES donation ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT record_type_donation CHECK (consistent_record_type('donation', record_id))
-);
-
-
--- ЖАЛОБЫ
-CREATE TYPE complaint_type AS ENUM ('human', 'artifact', 'expedition');
-
-CREATE TABLE IF NOT EXISTS complaint (
-	complaint_id serial PRIMARY KEY,
-	type complaint_type NOT NULL,
-	message_id int NOT NULL REFERENCES message ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE OR REPLACE FUNCTION consistent_complaint_type(complaint_type, int)
-RETURNS boolean AS $$ SELECT type = $1 FROM complaint WHERE complaint_id = $2 $$ LANGUAGE SQL;
-
-CREATE TABLE IF NOT EXISTS complaint_human (
-	complaint_id int PRIMARY KEY REFERENCES complaint ON UPDATE CASCADE ON DELETE CASCADE,
-	human_id int NOT NULL REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT complaint_type_human CHECK (consistent_complaint_type('human', complaint_id))
-);
-
-CREATE TABLE IF NOT EXISTS complaint_artifact (
-	complaint_id int PRIMARY KEY REFERENCES complaint ON UPDATE CASCADE ON DELETE CASCADE,
-	artifact_id int NOT NULL REFERENCES artifact ON UPDATE CASCADE ON DELETE CASCADE
-	CONSTRAINT complaint_type_human CHECK (consistent_complaint_type('artifact', complaint_id))
-);
-
-CREATE TABLE IF NOT EXISTS complaint_expedition (
-	complaint_id int PRIMARY KEY REFERENCES complaint ON UPDATE CASCADE ON DELETE CASCADE,
-	expedition_id int NOT NULL REFERENCES expedition ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT complaint_type_human CHECK (consistent_complaint_type('expedition', complaint_id))
 );
 
 -- изнутри бд запустить этот файл можно как \! psql -d имя_базы_данных -f путь/к/файлу/ddl.pgsql
