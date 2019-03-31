@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<title>WOW</title>
+	<meta charset="utf-8">
+</head>
+<body>
+<span id="a">Hm</span><br>
+
+<form action="http://localhost:8080/login" method="POST">
+	Login:
+	<input name="username" type="text"><br>
+
+	Password
+	<input name="password" type="password"><br>
+
+	<input type="submit" value="Try to log in">
+</form>
+
+
+<!-- <script type="text/javascript">
+	$.get({
+	  url: "http://localhost:8080/find",
+	  data: {login: 'nursat'},
+	  success: function(msg) {
+	  	// console.log(msg);
+	  	document.getElementById("a").innerHTML = JSON.stringify(msg);
+	  }
+	});
+</script> -->
+</body>
+</html>
