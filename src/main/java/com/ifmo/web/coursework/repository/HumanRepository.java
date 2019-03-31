@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HumanRepository extends JpaRepository<Human, Integer> {
-    Human findByLogin(String login);
-    Human findAllByVkId(String vkId);
-    Human findByEmail(String email);
-    Human findByTgNickname(String tg_nickname);
+    Optional<Human> findByLogin(String login);
+    Optional<Human> findByVkId(String vkId);
+    Optional<Human> findByEmail(String email);
+    Optional<Human> findByTgNickname(String tg_nickname);
     List<Human> findAllByFirstName(String firstName);
     List<Human> findAllBySecondName(String secondName);
     List<Human> findAllByLastName(String last_name);

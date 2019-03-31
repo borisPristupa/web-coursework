@@ -7,11 +7,12 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface MessageRepository extends JpaRepository<Message,Integer> {
-    Message findByMessageId(Integer message_id);
-    Message findByChatId(Integer chat_id);
-    Message findByHumanId(Integer human_id);
+    Optional<Message> findByMessageId(Integer message_id);
+    Optional<Message> findByChatId(Integer chat_id);
+    Optional<Message> findByHumanId(Integer human_id);
     List<Message> findAllByBody(String body);
     List<Message> findAllByDate(Date date);
 

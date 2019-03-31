@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootApplication
 public class CourseworkApplication {
@@ -29,9 +30,9 @@ public class CourseworkApplication {
             }
             log.info("-------------------");
 
-            Human human = humanRepository.findAllByVkId("nursat.baigenzheeb");
-            if (null != human) {
-                log.info(human.getHumanId().toString());
+            Optional<Human> human = humanRepository.findByVkId("nursat.baigenzheeb");
+            if (human.isPresent()) {
+                log.info(human.get().getHumanId().toString());
             } else {
                 log.info("No Nursat");
             }
