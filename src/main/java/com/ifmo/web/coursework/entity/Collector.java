@@ -6,7 +6,7 @@ import java.util.Objects;
 @Entity
 public class Collector {
     private Integer humanId;
-    private Human humanByHumanId;
+    private Human humanByCollector;
 
     @Id
     @Column(name = "human_id", nullable = false)
@@ -33,11 +33,11 @@ public class Collector {
 
     @OneToOne
     @JoinColumn(name = "human_id", referencedColumnName = "human_id", nullable = false)
-    public Human getHumanByHumanId() {
-        return humanByHumanId;
+    public Human getHumanByCollector() {
+        return humanByCollector;
     }
 
-    public void setHumanByHumanId(Human humanByHumanId) {
-        this.humanByHumanId = humanByHumanId;
+    public void setHumanByCollector(Human humanByHumanId) {
+        this.humanByCollector = humanByHumanId;
     }
 }

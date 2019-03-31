@@ -2,7 +2,6 @@ package com.ifmo.web.coursework.entity;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.Objects;
 
 @Entity
@@ -12,7 +11,6 @@ public class Message {
     private Integer humanId;
     private String body;
     private Timestamp date;
-    private Collection<Complaint> complaintsByMessageId;
     private Chat chatByChatId;
     private Human humanByHumanId;
 
@@ -81,15 +79,6 @@ public class Message {
     @Override
     public int hashCode() {
         return Objects.hash(messageId, chatId, humanId, body, date);
-    }
-
-    @OneToMany(mappedBy = "messageByMessageId")
-    public Collection<Complaint> getComplaintsByMessageId() {
-        return complaintsByMessageId;
-    }
-
-    public void setComplaintsByMessageId(Collection<Complaint> complaintsByMessageId) {
-        this.complaintsByMessageId = complaintsByMessageId;
     }
 
     @ManyToOne

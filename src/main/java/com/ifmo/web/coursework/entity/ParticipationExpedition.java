@@ -2,7 +2,6 @@ package com.ifmo.web.coursework.entity;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.util.Collection;
 import java.util.Objects;
 
 @Entity
@@ -14,7 +13,6 @@ public class ParticipationExpedition {
     private Date date;
     private Expedition expeditionByExpeditionId;
     private Human humanByHumanId;
-    private Collection<RecordParticipation> recordParticipationsByParticipationExpeditionId;
 
     @Id
     @Column(name = "participation_expedition_id", nullable = false)
@@ -90,14 +88,5 @@ public class ParticipationExpedition {
 
     public void setHumanByHumanId(Human humanByHumanId) {
         this.humanByHumanId = humanByHumanId;
-    }
-
-    @OneToMany(mappedBy = "participationExpeditionByParticipationExpeditionId")
-    public Collection<RecordParticipation> getRecordParticipationsByParticipationExpeditionId() {
-        return recordParticipationsByParticipationExpeditionId;
-    }
-
-    public void setRecordParticipationsByParticipationExpeditionId(Collection<RecordParticipation> recordParticipationsByParticipationExpeditionId) {
-        this.recordParticipationsByParticipationExpeditionId = recordParticipationsByParticipationExpeditionId;
     }
 }

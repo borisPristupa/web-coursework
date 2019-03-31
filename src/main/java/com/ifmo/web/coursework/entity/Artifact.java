@@ -27,10 +27,7 @@ public class Artifact {
     private Country countryByCountryId;
     private Category categoryByCategoryId;
     private Collection<Auction> auctionsByArtifactId;
-    private Collection<ComplaintArtifact> complaintArtifactsByArtifactId;
-    private ExcavationResult excavationResultByArtifactId;
-    private Collection<RecordPurchased> recordPurchasedsByArtifactId;
-    private Collection<RecordSold> recordSoldsByArtifactId;
+    private ExpeditionResult expeditionResultByArtifactId;
 
     @Id
     @Column(name = "artifact_id", nullable = false)
@@ -259,39 +256,12 @@ public class Artifact {
         this.auctionsByArtifactId = auctionsByArtifactId;
     }
 
-    @OneToMany(mappedBy = "artifactByArtifactId")
-    public Collection<ComplaintArtifact> getComplaintArtifactsByArtifactId() {
-        return complaintArtifactsByArtifactId;
-    }
-
-    public void setComplaintArtifactsByArtifactId(Collection<ComplaintArtifact> complaintArtifactsByArtifactId) {
-        this.complaintArtifactsByArtifactId = complaintArtifactsByArtifactId;
-    }
-
     @OneToOne(mappedBy = "artifactByArtifactId")
-    public ExcavationResult getExcavationResultByArtifactId() {
-        return excavationResultByArtifactId;
+    public ExpeditionResult getExpeditionResultByArtifactId() {
+        return expeditionResultByArtifactId;
     }
 
-    public void setExcavationResultByArtifactId(ExcavationResult excavationResultByArtifactId) {
-        this.excavationResultByArtifactId = excavationResultByArtifactId;
-    }
-
-    @OneToMany(mappedBy = "artifactByArtifactId")
-    public Collection<RecordPurchased> getRecordPurchasedsByArtifactId() {
-        return recordPurchasedsByArtifactId;
-    }
-
-    public void setRecordPurchasedsByArtifactId(Collection<RecordPurchased> recordPurchasedsByArtifactId) {
-        this.recordPurchasedsByArtifactId = recordPurchasedsByArtifactId;
-    }
-
-    @OneToMany(mappedBy = "artifactByArtifactId")
-    public Collection<RecordSold> getRecordSoldsByArtifactId() {
-        return recordSoldsByArtifactId;
-    }
-
-    public void setRecordSoldsByArtifactId(Collection<RecordSold> recordSoldsByArtifactId) {
-        this.recordSoldsByArtifactId = recordSoldsByArtifactId;
+    public void setExpeditionResultByArtifactId(ExpeditionResult expeditionResultByArtifactId) {
+        this.expeditionResultByArtifactId = expeditionResultByArtifactId;
     }
 }

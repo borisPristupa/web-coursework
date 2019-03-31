@@ -2,19 +2,16 @@ package com.ifmo.web.coursework.entity;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.util.Collection;
 import java.util.Objects;
 
 @Entity
 public class Stay {
     private Integer stayId;
     private Integer routeId;
-    private Boolean excavations;
     private Date startDate;
     private Date endDate;
     private Double latitude;
     private Double longtitude;
-    private Collection<ExcavationResult> excavationResultsByStayId;
     private Route routeByRouteId;
 
     @Id
@@ -35,16 +32,6 @@ public class Stay {
 
     public void setRouteId(Integer routeId) {
         this.routeId = routeId;
-    }
-
-    @Basic
-    @Column(name = "excavations", nullable = false)
-    public Boolean getExcavations() {
-        return excavations;
-    }
-
-    public void setExcavations(Boolean excavations) {
-        this.excavations = excavations;
     }
 
     @Basic
@@ -94,7 +81,6 @@ public class Stay {
         Stay stay = (Stay) o;
         return Objects.equals(stayId, stay.stayId) &&
                 Objects.equals(routeId, stay.routeId) &&
-                Objects.equals(excavations, stay.excavations) &&
                 Objects.equals(startDate, stay.startDate) &&
                 Objects.equals(endDate, stay.endDate) &&
                 Objects.equals(latitude, stay.latitude) &&
@@ -103,16 +89,7 @@ public class Stay {
 
     @Override
     public int hashCode() {
-        return Objects.hash(stayId, routeId, excavations, startDate, endDate, latitude, longtitude);
-    }
-
-    @OneToMany(mappedBy = "stayByExcavations")
-    public Collection<ExcavationResult> getExcavationResultsByStayId() {
-        return excavationResultsByStayId;
-    }
-
-    public void setExcavationResultsByStayId(Collection<ExcavationResult> excavationResultsByStayId) {
-        this.excavationResultsByStayId = excavationResultsByStayId;
+        return Objects.hash(stayId, routeId, startDate, endDate, latitude, longtitude);
     }
 
     @ManyToOne

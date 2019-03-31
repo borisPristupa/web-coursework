@@ -20,7 +20,6 @@ public class Expedition {
     private Integer routePlan;
     private Integer routeCurrent;
     private Integer head;
-    private Collection<ComplaintExpedition> complaintExpeditionsByExpeditionId;
     private Collection<Donation> donationsByExpeditionId;
     private ExpeditionStage expeditionStageByStageId;
     private Route routeByRoutePlan;
@@ -174,15 +173,6 @@ public class Expedition {
         result = 31 * result + Arrays.hashCode(avatarSmall);
         result = 31 * result + Arrays.hashCode(avatarFull);
         return result;
-    }
-
-    @OneToMany(mappedBy = "expeditionByExpeditionId")
-    public Collection<ComplaintExpedition> getComplaintExpeditionsByExpeditionId() {
-        return complaintExpeditionsByExpeditionId;
-    }
-
-    public void setComplaintExpeditionsByExpeditionId(Collection<ComplaintExpedition> complaintExpeditionsByExpeditionId) {
-        this.complaintExpeditionsByExpeditionId = complaintExpeditionsByExpeditionId;
     }
 
     @OneToMany(mappedBy = "expeditionByExpeditionId")

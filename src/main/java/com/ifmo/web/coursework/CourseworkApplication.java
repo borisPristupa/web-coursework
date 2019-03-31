@@ -1,6 +1,5 @@
 package com.ifmo.web.coursework;
 
-import com.ifmo.web.coursework.entity.Artifact;
 import com.ifmo.web.coursework.entity.Human;
 import com.ifmo.web.coursework.repository.ArtifactRepository;
 import com.ifmo.web.coursework.repository.HumanRepository;

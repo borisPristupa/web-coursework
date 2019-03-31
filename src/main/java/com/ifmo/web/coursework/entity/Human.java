@@ -24,20 +24,18 @@ public class Human {
     private Boolean banned;
     private Integer countryId;
     private Archaeologist archaeologistByHumanId;
-    private Collection<Artifact> artifactsByHumanId;
-    private Collection<Artifact> artifactsByHumanId_0;
-    private Collection<Auction> auctionsByHumanId;
+    private Collection<Artifact> artifactsByOwner;
+    private Collection<Artifact> artifactsByApprover;
+    private Collection<Auction> auctionsByRaiser;
     private Collector collectorByHumanId;
-    private Collection<ComplaintHuman> complaintHumenByHumanId;
     private Collection<Donation> donationsByHumanId;
-    private Collection<ExcavationResult> excavationResultsByHumanId;
+    private Collection<ExpeditionResult> expeditionResultsByHumanId;
     private Collection<Expedition> expeditionsByHumanId;
     private Country countryByCountryId;
     private Collection<HumanChat> humanChatsByHumanId;
     private Collection<Message> messagesByHumanId;
     private Moderator moderatorByHumanId;
     private Collection<ParticipationExpedition> participationExpeditionsByHumanId;
-    private Collection<Record> recordsByHumanId;
     private Researcher researcherByHumanId;
     private Sponsor sponsorByHumanId;
     private Collection<SubscriptionAuction> subscriptionAuctionsByHumanId;
@@ -244,33 +242,33 @@ public class Human {
     }
 
     @OneToMany(mappedBy = "humanByOwner")
-    public Collection<Artifact> getArtifactsByHumanId() {
-        return artifactsByHumanId;
+    public Collection<Artifact> getArtifactsByOwner() {
+        return artifactsByOwner;
     }
 
-    public void setArtifactsByHumanId(Collection<Artifact> artifactsByHumanId) {
-        this.artifactsByHumanId = artifactsByHumanId;
+    public void setArtifactsByOwner(Collection<Artifact> artifactsByHumanId) {
+        this.artifactsByOwner = artifactsByHumanId;
     }
 
     @OneToMany(mappedBy = "humanByApprover")
-    public Collection<Artifact> getArtifactsByHumanId_0() {
-        return artifactsByHumanId_0;
+    public Collection<Artifact> getArtifactsByApprover() {
+        return artifactsByApprover;
     }
 
-    public void setArtifactsByHumanId_0(Collection<Artifact> artifactsByHumanId_0) {
-        this.artifactsByHumanId_0 = artifactsByHumanId_0;
+    public void setArtifactsByApprover(Collection<Artifact> artifactsByHumanId_0) {
+        this.artifactsByApprover = artifactsByHumanId_0;
     }
 
     @OneToMany(mappedBy = "humanByRaiser")
-    public Collection<Auction> getAuctionsByHumanId() {
-        return auctionsByHumanId;
+    public Collection<Auction> getAuctionsByRaiser() {
+        return auctionsByRaiser;
     }
 
-    public void setAuctionsByHumanId(Collection<Auction> auctionsByHumanId) {
-        this.auctionsByHumanId = auctionsByHumanId;
+    public void setAuctionsByRaiser(Collection<Auction> auctionsByHumanId) {
+        this.auctionsByRaiser = auctionsByHumanId;
     }
 
-    @OneToOne(mappedBy = "humanByHumanId")
+    @OneToOne(mappedBy = "humanByCollector")
     public Collector getCollectorByHumanId() {
         return collectorByHumanId;
     }
@@ -279,16 +277,7 @@ public class Human {
         this.collectorByHumanId = collectorByHumanId;
     }
 
-    @OneToMany(mappedBy = "humanByHumanId")
-    public Collection<ComplaintHuman> getComplaintHumenByHumanId() {
-        return complaintHumenByHumanId;
-    }
-
-    public void setComplaintHumenByHumanId(Collection<ComplaintHuman> complaintHumenByHumanId) {
-        this.complaintHumenByHumanId = complaintHumenByHumanId;
-    }
-
-    @OneToMany(mappedBy = "humanByHumanId")
+    @OneToMany(mappedBy = "humanByDonator")
     public Collection<Donation> getDonationsByHumanId() {
         return donationsByHumanId;
     }
@@ -297,13 +286,13 @@ public class Human {
         this.donationsByHumanId = donationsByHumanId;
     }
 
-    @OneToMany(mappedBy = "humanByHumanId")
-    public Collection<ExcavationResult> getExcavationResultsByHumanId() {
-        return excavationResultsByHumanId;
+    @OneToMany(mappedBy = "resultFinderByHumanId")
+    public Collection<ExpeditionResult> getExpeditionResultsByHumanId() {
+        return expeditionResultsByHumanId;
     }
 
-    public void setExcavationResultsByHumanId(Collection<ExcavationResult> excavationResultsByHumanId) {
-        this.excavationResultsByHumanId = excavationResultsByHumanId;
+    public void setExpeditionResultsByHumanId(Collection<ExpeditionResult> expeditionResultsByHumanId) {
+        this.expeditionResultsByHumanId = expeditionResultsByHumanId;
     }
 
     @OneToMany(mappedBy = "humanByHead")
@@ -359,15 +348,6 @@ public class Human {
 
     public void setParticipationExpeditionsByHumanId(Collection<ParticipationExpedition> participationExpeditionsByHumanId) {
         this.participationExpeditionsByHumanId = participationExpeditionsByHumanId;
-    }
-
-    @OneToMany(mappedBy = "humanByHumanId")
-    public Collection<Record> getRecordsByHumanId() {
-        return recordsByHumanId;
-    }
-
-    public void setRecordsByHumanId(Collection<Record> recordsByHumanId) {
-        this.recordsByHumanId = recordsByHumanId;
     }
 
     @OneToOne(mappedBy = "humanByHumanId")

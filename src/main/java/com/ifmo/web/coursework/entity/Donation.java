@@ -3,19 +3,17 @@ package com.ifmo.web.coursework.entity;
 import javax.persistence.*;
 import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.Objects;
 
 @Entity
 public class Donation {
     private Integer donationId;
-    private Integer humanId;
+    private Integer donatorId;
     private Integer expeditionId;
     private Timestamp time;
     private BigInteger amount;
-    private Human humanByHumanId;
+    private Human humanByDonator;
     private Expedition expeditionByExpeditionId;
-    private Collection<RecordDonation> recordDonationsByDonationId;
 
     @Id
     @Column(name = "donation_id", nullable = false)
@@ -29,12 +27,12 @@ public class Donation {
 
     @Basic
     @Column(name = "human_id", nullable = false, insertable = false, updatable = false)
-    public Integer getHumanId() {
-        return humanId;
+    public Integer getDonatorId() {
+        return donatorId;
     }
 
-    public void setHumanId(Integer humanId) {
-        this.humanId = humanId;
+    public void setDonatorId(Integer humanId) {
+        this.donatorId = humanId;
     }
 
     @Basic
@@ -73,7 +71,7 @@ public class Donation {
         if (o == null || getClass() != o.getClass()) return false;
         Donation donation = (Donation) o;
         return Objects.equals(donationId, donation.donationId) &&
-                Objects.equals(humanId, donation.humanId) &&
+                Objects.equals(donatorId, donation.donatorId) &&
                 Objects.equals(expeditionId, donation.expeditionId) &&
                 Objects.equals(time, donation.time) &&
                 Objects.equals(amount, donation.amount);
@@ -81,17 +79,17 @@ public class Donation {
 
     @Override
     public int hashCode() {
-        return Objects.hash(donationId, humanId, expeditionId, time, amount);
+        return Objects.hash(donationId, donatorId, expeditionId, time, amount);
     }
 
     @ManyToOne
     @JoinColumn(name = "human_id", referencedColumnName = "human_id", nullable = false)
-    public Human getHumanByHumanId() {
-        return humanByHumanId;
+    public Human getHumanByDonator() {
+        return humanByDonator;
     }
 
-    public void setHumanByHumanId(Human humanByHumanId) {
-        this.humanByHumanId = humanByHumanId;
+    public void setHumanByDonator(Human humanByHumanId) {
+        this.humanByDonator = humanByHumanId;
     }
 
     @ManyToOne
@@ -102,14 +100,5 @@ public class Donation {
 
     public void setExpeditionByExpeditionId(Expedition expeditionByExpeditionId) {
         this.expeditionByExpeditionId = expeditionByExpeditionId;
-    }
-
-    @OneToMany(mappedBy = "donationByDonationId")
-    public Collection<RecordDonation> getRecordDonationsByDonationId() {
-        return recordDonationsByDonationId;
-    }
-
-    public void setRecordDonationsByDonationId(Collection<RecordDonation> recordDonationsByDonationId) {
-        this.recordDonationsByDonationId = recordDonationsByDonationId;
     }
 }

@@ -1,7 +1,6 @@
 package com.ifmo.web.coursework.entity;
 
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -10,9 +9,6 @@ public class Chat {
     private Integer chatId;
     private String name;
     private String description;
-    private byte[] avatarSmall;
-    private byte[] avatarFull;
-    private Integer memberNum;
     private Collection<HumanChat> humanChatsByChatId;
     private Collection<Message> messagesByChatId;
 
@@ -46,36 +42,6 @@ public class Chat {
         this.description = description;
     }
 
-    @Basic
-    @Column(name = "avatar_small", nullable = true)
-    public byte[] getAvatarSmall() {
-        return avatarSmall;
-    }
-
-    public void setAvatarSmall(byte[] avatarSmall) {
-        this.avatarSmall = avatarSmall;
-    }
-
-    @Basic
-    @Column(name = "avatar_full", nullable = true)
-    public byte[] getAvatarFull() {
-        return avatarFull;
-    }
-
-    public void setAvatarFull(byte[] avatarFull) {
-        this.avatarFull = avatarFull;
-    }
-
-    @Basic
-    @Column(name = "member_num", nullable = true)
-    public Integer getMemberNum() {
-        return memberNum;
-    }
-
-    public void setMemberNum(Integer memberNum) {
-        this.memberNum = memberNum;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -83,18 +49,12 @@ public class Chat {
         Chat chat = (Chat) o;
         return Objects.equals(chatId, chat.chatId) &&
                 Objects.equals(name, chat.name) &&
-                Objects.equals(description, chat.description) &&
-                Arrays.equals(avatarSmall, chat.avatarSmall) &&
-                Arrays.equals(avatarFull, chat.avatarFull) &&
-                Objects.equals(memberNum, chat.memberNum);
+                Objects.equals(description, chat.description);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(chatId, name, description, memberNum);
-        result = 31 * result + Arrays.hashCode(avatarSmall);
-        result = 31 * result + Arrays.hashCode(avatarFull);
-        return result;
+        return Objects.hash(chatId, name, description);
     }
 
     @OneToMany(mappedBy = "chatByChatId")

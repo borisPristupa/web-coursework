@@ -5,15 +5,13 @@ import java.sql.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "excavation_result", schema = "public", catalog = "postgres")
-public class ExcavationResult {
+@Table(name = "expedition_result", schema = "public", catalog = "postgres")
+public class ExpeditionResult {
     private Integer artifactId;
-    private Integer excavations;
-    private Integer humanId;
+    private Integer resultFinderId;
     private Date date;
     private Artifact artifactByArtifactId;
-    private Stay stayByExcavations;
-    private Human humanByHumanId;
+    private Human resultFinderByHumanId;
 
     @Id
     @Column(name = "artifact_id", nullable = false, insertable = false, updatable = false)
@@ -26,23 +24,13 @@ public class ExcavationResult {
     }
 
     @Basic
-    @Column(name = "excavations", nullable = false, insertable = false, updatable = false)
-    public Integer getExcavations() {
-        return excavations;
-    }
-
-    public void setExcavations(Integer excavations) {
-        this.excavations = excavations;
-    }
-
-    @Basic
     @Column(name = "human_id", nullable = false, insertable = false, updatable = false)
-    public Integer getHumanId() {
-        return humanId;
+    public Integer getResultFinderId() {
+        return resultFinderId;
     }
 
-    public void setHumanId(Integer humanId) {
-        this.humanId = humanId;
+    public void setResultFinderId(Integer humanId) {
+        this.resultFinderId = humanId;
     }
 
     @Basic
@@ -59,16 +47,15 @@ public class ExcavationResult {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ExcavationResult that = (ExcavationResult) o;
+        ExpeditionResult that = (ExpeditionResult) o;
         return Objects.equals(artifactId, that.artifactId) &&
-                Objects.equals(excavations, that.excavations) &&
-                Objects.equals(humanId, that.humanId) &&
+                Objects.equals(resultFinderId, that.resultFinderId) &&
                 Objects.equals(date, that.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(artifactId, excavations, humanId, date);
+        return Objects.hash(artifactId, resultFinderId, date);
     }
 
     @OneToOne
@@ -82,22 +69,12 @@ public class ExcavationResult {
     }
 
     @ManyToOne
-    @JoinColumn(name = "excavations", referencedColumnName = "stay_id", nullable = false)
-    public Stay getStayByExcavations() {
-        return stayByExcavations;
-    }
-
-    public void setStayByExcavations(Stay stayByExcavations) {
-        this.stayByExcavations = stayByExcavations;
-    }
-
-    @ManyToOne
     @JoinColumn(name = "human_id", referencedColumnName = "human_id", nullable = false)
-    public Human getHumanByHumanId() {
-        return humanByHumanId;
+    public Human getResultFinderByHumanId() {
+        return resultFinderByHumanId;
     }
 
-    public void setHumanByHumanId(Human humanByHumanId) {
-        this.humanByHumanId = humanByHumanId;
+    public void setResultFinderByHumanId(Human humanByHumanId) {
+        this.resultFinderByHumanId = humanByHumanId;
     }
 }
