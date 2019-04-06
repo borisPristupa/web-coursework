@@ -16,12 +16,12 @@ public class Human {
     private String firstName;
     private String secondName;
     private String lastName;
-    private String bio;
-    private Integer likes;
-    private Integer dislikes;
+    private String bio = "";
+    private Integer likes = 0;
+    private Integer dislikes = 0;
     private byte[] avatarSmall;
     private byte[] avatarFull;
-    private Boolean banned;
+    private Boolean banned = false;
     private Integer countryId;
     private Archaeologist archaeologistByHumanId;
     private Collection<Artifact> artifactsByOwner;
@@ -42,6 +42,7 @@ public class Human {
     private Collection<SubscriptionExpedition> subscriptionExpeditionsByHumanId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "human_id", nullable = false)
     public Integer getHumanId() {
         return humanId;
