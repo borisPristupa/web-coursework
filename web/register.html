@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <title>Register</title>
+</head>
+<body>
+<label for="username">Login:</label><input id="username" type="text"><br>
+<label for="first_name">Имя*:</label><input id="first_name" type="text"><br>
+<label for="second_name">Фамилия*:</label><input id="second_name" type="text"><br>
+<label for="last_name">Отчество:</label><input id="last_name" type="text"><br>
+<label for="email">Email*:</label><input id="email" type="text"><br>
+<label for="password">Password</label><input id="password" type="password"><br>
+<label for="password_repeat">Repeat password:</label><input id="password_repeat" type="password"
+                                                            onkeyup="checkPassword()"><br>
+<label for="vk_id">VK id:</label><input id="vk_id" type="text"><br>
+
+
+<button onclick="reg()">Try to login</button>
+<span id="message"></span><br>
+
+<a href="login.html">Go to login page</a>
+
+<script type="text/javascript">
+    function nullValidById(id) {
+        let value = document.getElementById(id).value;
+        return value === '' ? null : value;
+    }
+
+    let msgSpan = document.getElementById("message");
+
+    function reg() {
+        let data = {};
+        let username = nullValidById("username");
+        let first_name = nullValidById("first_name");
+        let second_name = nullValidById("second_name");
+        let last_name = nullValidById("last_name");
+        let email = nullValidById("email");
+        let password = nullValidById("password");
+        let vk_id = nullValidById("vk_id");
+
+        if (vk_id !== null) {
+            data.vk_id = vk_id;
+            username = password = vk_id;
+        }
+
+        if (username === null) username = email;
+
+        if (last_name !== null) data.last_name = last_name;
+
+        data = {
+            ...data,
+            username,
+            first_name,
+            second_name,
+            email,
+            password
+        };
+
+        $.ajax({
+            url: "http://localhost:8080/sign/up",
+            type: "PUT",
+            data: data,
+            "success": function (msg) {
+                msgSpan.innerHTML = JSON.stringify(msg);
+            },
+            "error": function (msg) {
+                msgSpan.innerHTML = msg.responseText;
+            }
+        });
+    }
+
+    function checkPassword() {
+        if (document.getElementById("password").value === document.getElementById("password_repeat").value) {
+            msgSpan.innerHTML = "";
+        } else {
+            msgSpan.innerHTML = "Passwords do not match!";
+        }
+    }
+</script>
+</body>
+</html>

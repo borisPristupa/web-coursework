@@ -25,12 +25,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .cors()
                 .and().authorizeRequests()
-                .anyRequest().authenticated()
+//                .anyRequest().authenticated()
+                .antMatchers("/sign/**").permitAll()
                 .and()
                 .formLogin()
-                .loginPage("/login").permitAll()
-                .successForwardUrl("/loginok")
-                .failureHandler(new BadCredentialsHandler());
+                    .loginPage("/sign/in")
+                    .successForwardUrl("/sign/in")
+                    .failureHandler(new BadCredentialsHandler())
+                .and().logout()
+                    .logoutUrl("/sign/out")
+                    .logoutSuccessUrl("/sign/out/success");
     }
 
     @Bean
