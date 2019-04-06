@@ -16,10 +16,8 @@ import java.util.Optional;
 
 @Component
 public class Authenticator implements AuthenticationManager {
-    @Autowired
-    PasswordEncoder encoder;
-    @Autowired
-    HumanRepository humanRepository;
+    private final PasswordEncoder encoder;
+    private final HumanRepository humanRepository;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws BadCredentialsException {
@@ -29,7 +27,7 @@ public class Authenticator implements AuthenticationManager {
         Optional<Human> byLogin = humanRepository.findByLogin(authentication.getName());
         Human human = byLogin.orElseThrow(() -> new BadCredentialsException("Wrong login"));
 
-        if (!human.getPassword().equals(encoder.encode(authentication.getCredentials().toString()))) {
+        if (!encoder.matches(authentication.getCredentials().toString(), human.getPassword())) {
             throw new BadCredentialsException("Wrong login/password");
         }
 
@@ -39,5 +37,9 @@ public class Authenticator implements AuthenticationManager {
                         new SimpleGrantedAuthority("ROLE_USER"))); // FIXME: 05.04.19
     }
 
-
+    @Autowired
+    public Authenticator(PasswordEncoder encoder, HumanRepository humanRepository) {
+        this.encoder = encoder;
+        this.humanRepository = humanRepository;
+    }
 }

@@ -12,10 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class LoginController {
-    @Autowired
-    HumanRepository humanRepository;
+    private final HumanRepository humanRepository;
 
-    @GetMapping("/loginok")
+    @PostMapping("/loginok")
     public HumanResponse loginOK() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         Human human = humanRepository.findByLogin(userName)
@@ -29,5 +28,10 @@ public class LoginController {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse loginError(@RequestParam("msg") String message) {
         return new ErrorResponse("Authentication failed: " + message);
+    }
+
+    @Autowired
+    public LoginController(HumanRepository humanRepository) {
+        this.humanRepository = humanRepository;
     }
 }

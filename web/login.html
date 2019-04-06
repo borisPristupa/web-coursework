@@ -21,12 +21,11 @@
 		  	username: document.getElementById("username").value,
 		  	password: document.getElementById("password").value
 		  },
-		  success: function(msg) {
-		  	// console.log(msg);
+		  "success": function(msg) {
 		  	document.getElementById("message").innerHTML = JSON.stringify(msg);
 		  },
-		  error: function(msg) {
-		  	document.getElementById("message").innerHTML = JSON.stringify(msg);
+		  "error": function(msg) {
+		  	document.getElementById("message").innerHTML = msg.responseText;
 		  }
 		});
 	}

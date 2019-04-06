@@ -29,7 +29,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/login").permitAll()
-                .defaultSuccessUrl("/loginok")
+                .successForwardUrl("/loginok")
                 .failureHandler(new BadCredentialsHandler());
     }
 
