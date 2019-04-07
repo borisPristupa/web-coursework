@@ -16,10 +16,10 @@ public class HumanResponse {
     private String first_name, second_name, last_name = "";
     private String bio = "";
     private String vk_id, tg_nickname, email;
-    private int likes = 0, dislikes = 0;
-    private boolean banned = false;
+    private Integer likes = 0, dislikes = 0;
+    private Boolean banned;
     private CountryResponse country;
-    private boolean moderator, researcher, archaeologist, collector, sponsor;
+    private Boolean moderator, researcher, archaeologist, collector, sponsor;
 
     public static HumanResponse fromHuman(Human human) {
         return HumanResponse.builder()
@@ -38,11 +38,11 @@ public class HumanResponse {
                 .banned(human.getBanned())
                 .country(CountryResponse.fromCountry(human.getCountryByCountryId()))
 
-                .moderator(null != human.getModeratorByHumanId())
-                .researcher(null != human.getResearcherByHumanId())
-                .archaeologist(null != human.getArchaeologistByHumanId())
-                .collector(null != human.getCollectorByHumanId())
-                .sponsor(null != human.getSponsorByHumanId())
+                .moderator(human.getModerator())
+                .researcher(human.getResearcher())
+                .archaeologist(human.getArchaeologist())
+                .collector(human.getCollector())
+                .sponsor(human.getSponsor())
                 .build();
     }
 }

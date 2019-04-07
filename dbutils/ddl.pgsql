@@ -23,6 +23,11 @@ CREATE TABLE IF NOT EXISTS human (
 	bio text NOT NULL DEFAULT '',
 	likes int NOT NULL DEFAULT 0 CHECK (likes >= 0),
 	dislikes int NOT NULL DEFAULT 0 CHECK (dislikes >= 0),
+	archaeologist boolean NOT NULL DEFAULT FALSE,
+	researcher boolean NOT NULL DEFAULT FALSE,
+	collector boolean NOT NULL DEFAULT FALSE,
+	sponsor boolean NOT NULL DEFAULT FALSE,
+	moderator boolean NOT NULL DEFAULT FALSE,
 	avatar_small bytea,
 	avatar_full bytea,
 	banned boolean NOT NULL DEFAULT FALSE,
@@ -43,28 +48,6 @@ CREATE TABLE IF NOT EXISTS message (
 	body text NOT NULL CHECK (trim(body) != ''),
 	_date timestamp NOT NULL,
 	UNIQUE(chat_id, message_id)
-);
-
--- РОЛИ humanОВ
-CREATE TABLE IF NOT EXISTS archaeologist (
-	human_id int PRIMARY KEY REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS collector (
-	human_id int PRIMARY KEY REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS moderator (
-	human_id int PRIMARY KEY REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE,
-	tg_nickname text NOT NULL UNIQUE CHECK (tg_nickname != '')
-);
-
-CREATE TABLE IF NOT EXISTS researcher (
-	human_id int PRIMARY KEY REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS sponsor (
-	human_id int PRIMARY KEY REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- artifactЫ + auctionЫ

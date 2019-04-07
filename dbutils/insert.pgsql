@@ -15,22 +15,54 @@ insert into chat (chat_id,name, description)
 values (3,'three','btw 2p');
 
 -- human
-insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,likes,dislikes,avatar_small,avatar_full,banned,country_id)
-          values ('nursat','555','nursat@icloud.con','nursat.baigenzheev','nursat','Nursat','Baigenzheyev','','blablabla',28,3,'','',false,1);
-insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,likes,dislikes,avatar_small,avatar_full,banned,country_id)
-          values ('boris','666','boris@icloud.con','null','boris_pristupa','Boris','Pristupa','Не_сегодня','blablabla1',30,5,'','',false,2);
-insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,likes,dislikes,avatar_small,avatar_full,banned,country_id)
-          values ('nursat1','777','nursat1@icloud.com','nursat.baigenzheeb','Nursat1','Nursat1','Baigenzheyev1','','blabla2',29,6,'','',false,3);
-insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,likes,dislikes,avatar_small,avatar_full,banned,country_id)
-          values ('boris1','888','boris1@icloud.com','boris.pristup1','boris_pristupa1','Boris1','Pristupa1','Не_сегодня1','blabla3',22,1,'','',false,4);
-insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,likes,dislikes,avatar_small,avatar_full,banned,country_id)
-          values ('nursat2','999','nursat2@icloud.co','nursat.baigenzheed','Nursat2','Nursat2','Baigenzheyev2','','blabla4',28,3,'','',false,5);
-insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,likes,dislikes,avatar_small,avatar_full,banned,country_id)
-          values ('boris2','101','boris2@icloud.co','boris.pristup2','boris_pristupa2','Boris2','Pristupa2','Не_сегодня2','blabla5',33,1,'','',true ,2);
-insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,likes,dislikes,avatar_small,avatar_full,banned,country_id)
-          values ('nursat3','102','nursat3@icloud.cd','nursat.baigenzheef','Nursat3','Nursat3','Baigenzheyev3','','blabla6',40,3,'','',true ,5);
-insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,likes,dislikes,avatar_small,avatar_full,banned,country_id)
-          values ('boris3','103','boris3@icloud.cd','boris.pristup3','boris_pristupa3','Boris3','Pristupa3','Не_сегодня3','blabla7',32,2,'','',true ,1);
+insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,
+	archaeologist,researcher,collector,sponsor,moderator,
+	likes,dislikes,avatar_small,avatar_full,banned,country_id)
+          values ('nursat','555','nursat@icloud.con','nursat.baigenzheev','nursat','Nursat','Baigenzheyev','','blablabla',
+          	false, true, true, false, false,
+          	28,3,'','',false,1);
+insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,
+	archaeologist,researcher,collector,sponsor,moderator,
+	likes,dislikes,avatar_small,avatar_full,banned,country_id)
+          values ('boris','666','boris@icloud.con','null','boris_pristupa','Boris','Pristupa','Не_сегодня','blablabla1',
+          	false, true, true, true, false,
+          	30,5,'','',false,2);
+insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,
+	archaeologist,researcher,collector,sponsor,moderator,
+	likes,dislikes,avatar_small,avatar_full,banned,country_id)
+          values ('nursat1','777','nursat1@icloud.com','nursat.baigenzheeb','Nursat1','Nursat1','Baigenzheyev1','','blabla2',
+          	false, true, true, false, false,
+          	29,6,'','',false,3);
+insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,
+	archaeologist,researcher,collector,sponsor,moderator,
+	likes,dislikes,avatar_small,avatar_full,banned,country_id)
+          values ('boris1','888','boris1@icloud.com','boris.pristup1','boris_pristupa1','Boris1','Pristupa1','Не_сегодня1','blabla3',
+          	false, false, true, false, false,
+          	22,1,'','',false,4);
+insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,
+	archaeologist,researcher,collector,sponsor,moderator,
+	likes,dislikes,avatar_small,avatar_full,banned,country_id)
+          values ('nursat2','999','nursat2@icloud.co','nursat.baigenzheed','Nursat2','Nursat2','Baigenzheyev2','','blabla4',
+          	true, true, false, false, false,
+          	28,3,'','',false,5);
+insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,
+	archaeologist,researcher,collector,sponsor,moderator,
+	likes,dislikes,avatar_small,avatar_full,banned,country_id)
+          values ('boris2','101','boris2@icloud.co','boris.pristup2','boris_pristupa2','Boris2','Pristupa2','Не_сегодня2','blabla5',
+          	true, false, true, true, false,
+          	33,1,'','',true ,2);
+insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,
+	archaeologist,researcher,collector,sponsor,moderator,
+	likes,dislikes,avatar_small,avatar_full,banned,country_id)
+          values ('nursat3','102','nursat3@icloud.cd','nursat.baigenzheef','Nursat3','Nursat3','Baigenzheyev3','','blabla6',
+          	false, true, true, false, true,
+          	40,3,'','',true ,5);
+insert into human (login,password,email,vk_id,tg_nickname,first_name,second_name,last_name,bio,
+	archaeologist,researcher,collector,sponsor,moderator,
+	likes,dislikes,avatar_small,avatar_full,banned,country_id)
+          values ('boris3','103','boris3@icloud.cd','boris.pristup3','boris_pristupa3','Boris3','Pristupa3','Не_сегодня3','blabla7',
+          	false, true, false, true, false,
+          	32,2,'','',true ,1);
 
 
 --human_chat
@@ -58,34 +90,6 @@ insert into message (chat_id,human_id,body,_date) values (3,1,'444','2018-09-28 
 
 
 ----------------------------------------------------------------------------------------------------------------------------------------
-
-
---archeaologist
-insert into archaeologist (human_id) values (1);
-insert into archaeologist (human_id) values (2);
-insert into archaeologist (human_id) values (3);
-insert into archaeologist (human_id) values (5);
-
-
---collector
-insert into collector (human_id) values (1);
-insert into collector (human_id) values (2);
-insert into collector (human_id) values (4);
-
---moderator
-insert into moderator values (3, 'Nursat1');
-insert into moderator values (1, 'nursat');
-
---researcher
-insert into researcher values (4);
-insert into researcher values (1);
-
---sponsor
-insert into sponsor values (5);
-insert into sponsor values (1);
-
-
------------------------------------------------------------------------------------------------------------------------------------------
 
 --age
 insert into age (description) values ('1000усл');

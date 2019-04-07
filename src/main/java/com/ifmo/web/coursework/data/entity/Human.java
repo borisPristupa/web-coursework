@@ -23,21 +23,21 @@ public class Human {
     private byte[] avatarFull;
     private Boolean banned = false;
     private Integer countryId;
-    private Archaeologist archaeologistByHumanId;
+    private Boolean archaeologist = false;
+    private Boolean researcher = false;
+    private Boolean collector = false;
+    private Boolean sponsor = false;
+    private Boolean moderator = false;
     private Collection<Artifact> artifactsByOwner;
     private Collection<Artifact> artifactsByApprover;
     private Collection<Auction> auctionsByRaiser;
-    private Collector collectorByHumanId;
     private Collection<Donation> donationsByHumanId;
     private Collection<ExpeditionResult> expeditionResultsByHumanId;
     private Collection<Expedition> expeditionsByHumanId;
     private Country countryByCountryId;
     private Collection<HumanChat> humanChatsByHumanId;
     private Collection<Message> messagesByHumanId;
-    private Moderator moderatorByHumanId;
     private Collection<ParticipationExpedition> participationExpeditionsByHumanId;
-    private Researcher researcherByHumanId;
-    private Sponsor sponsorByHumanId;
     private Collection<SubscriptionAuction> subscriptionAuctionsByHumanId;
     private Collection<SubscriptionExpedition> subscriptionExpeditionsByHumanId;
 
@@ -143,6 +143,56 @@ public class Human {
     }
 
     @Basic
+    @Column(name = "archaeologist", nullable = false)
+    public Boolean getArchaeologist() {
+        return archaeologist;
+    }
+
+    public void setArchaeologist(Boolean archaeologist) {
+        this.archaeologist = archaeologist;
+    }
+
+    @Basic
+    @Column(name = "researcher", nullable = false)
+    public Boolean getResearcher() {
+        return researcher;
+    }
+
+    public void setResearcher(Boolean researcher) {
+        this.researcher = researcher;
+    }
+
+    @Basic
+    @Column(name = "collector", nullable = false)
+    public Boolean getCollector() {
+        return collector;
+    }
+
+    public void setCollector(Boolean collector) {
+        this.collector = collector;
+    }
+
+    @Basic
+    @Column(name = "sponsor", nullable = false)
+    public Boolean getSponsor() {
+        return sponsor;
+    }
+
+    public void setSponsor(Boolean sponsor) {
+        this.sponsor = sponsor;
+    }
+
+    @Basic
+    @Column(name = "moderator", nullable = false)
+    public Boolean getModerator() {
+        return moderator;
+    }
+
+    public void setModerator(Boolean moderator) {
+        this.moderator = moderator;
+    }
+
+    @Basic
     @Column(name = "likes", nullable = false)
     public Integer getLikes() {
         return likes;
@@ -233,15 +283,6 @@ public class Human {
         return result;
     }
 
-    @OneToOne(mappedBy = "humanByHumanId")
-    public Archaeologist getArchaeologistByHumanId() {
-        return archaeologistByHumanId;
-    }
-
-    public void setArchaeologistByHumanId(Archaeologist archaeologistByHumanId) {
-        this.archaeologistByHumanId = archaeologistByHumanId;
-    }
-
     @OneToMany(mappedBy = "humanByOwner")
     public Collection<Artifact> getArtifactsByOwner() {
         return artifactsByOwner;
@@ -267,15 +308,6 @@ public class Human {
 
     public void setAuctionsByRaiser(Collection<Auction> auctionsByHumanId) {
         this.auctionsByRaiser = auctionsByHumanId;
-    }
-
-    @OneToOne(mappedBy = "humanByCollector")
-    public Collector getCollectorByHumanId() {
-        return collectorByHumanId;
-    }
-
-    public void setCollectorByHumanId(Collector collectorByHumanId) {
-        this.collectorByHumanId = collectorByHumanId;
     }
 
     @OneToMany(mappedBy = "humanByDonator")
@@ -333,15 +365,6 @@ public class Human {
         this.messagesByHumanId = messagesByHumanId;
     }
 
-    @OneToOne(mappedBy = "humanByHumanId")
-    public Moderator getModeratorByHumanId() {
-        return moderatorByHumanId;
-    }
-
-    public void setModeratorByHumanId(Moderator moderatorByHumanId) {
-        this.moderatorByHumanId = moderatorByHumanId;
-    }
-
     @OneToMany(mappedBy = "humanByHumanId")
     public Collection<ParticipationExpedition> getParticipationExpeditionsByHumanId() {
         return participationExpeditionsByHumanId;
@@ -349,24 +372,6 @@ public class Human {
 
     public void setParticipationExpeditionsByHumanId(Collection<ParticipationExpedition> participationExpeditionsByHumanId) {
         this.participationExpeditionsByHumanId = participationExpeditionsByHumanId;
-    }
-
-    @OneToOne(mappedBy = "humanByHumanId")
-    public Researcher getResearcherByHumanId() {
-        return researcherByHumanId;
-    }
-
-    public void setResearcherByHumanId(Researcher researcherByHumanId) {
-        this.researcherByHumanId = researcherByHumanId;
-    }
-
-    @OneToOne(mappedBy = "humanByHumanId")
-    public Sponsor getSponsorByHumanId() {
-        return sponsorByHumanId;
-    }
-
-    public void setSponsorByHumanId(Sponsor sponsorByHumanId) {
-        this.sponsorByHumanId = sponsorByHumanId;
     }
 
     @OneToMany(mappedBy = "humanByHumanId")
