@@ -11,6 +11,7 @@ public class CountryResponse {
     private String name;
 
     public static CountryResponse fromCountry(Country country) {
+        if (null == country) return null;
         return CountryResponse.builder()
                 .id(country.getCountryId())
                 .name(country.getName())
