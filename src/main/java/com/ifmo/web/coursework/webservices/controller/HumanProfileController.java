@@ -11,6 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/human")
 public class HumanProfileController {
@@ -112,6 +117,32 @@ public class HumanProfileController {
 
         humanRepository.save(edited);
         return HumanResponse.fromHuman(edited);
+    }
+
+    @GetMapping("/search")
+    public List<HumanResponse> search(@RequestParam(value = "amount", required = false, defaultValue = "20") int amount,
+                                      @RequestParam("archaeologist") boolean archaeologist,
+                                      @RequestParam("researcher") boolean researcher,
+                                      @RequestParam("collector") boolean collector,
+                                      @RequestParam("sponsor") boolean sponsor,
+                                      @RequestParam(value = "searchfor", required = false, defaultValue = "") String pattern) {
+        return humanRepository.findAll().stream()
+                .filter(h -> pattern.trim().isEmpty() ||
+                        Arrays.stream(pattern.trim().split(" "))
+                                .anyMatch(name -> name.equals(h.getFirstName()) ||
+                                        name.equals(h.getSecondName()) ||
+                                        name.equals(h.getLastName())))
+                .filter(h ->
+                        archaeologist && h.getArchaeologist() ||
+                                researcher && h.getResearcher() ||
+                                collector && h.getCollector() ||
+                                sponsor && h.getSponsor() ||
+                                !h.getArchaeologist() && !h.getResearcher() && !h.getCollector() && !h.getSponsor())
+                .filter(h -> humanUtils.getCurrentId() != h.getHumanId())
+                .limit(amount)
+                .sorted(Comparator.comparingInt(Human::getHumanId))
+                .map(HumanResponse::fromHuman)
+                .collect(Collectors.toList());
     }
 
     @Autowired
