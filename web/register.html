@@ -45,7 +45,7 @@
             username = password = vk_id;
         }
 
-        if (username === null) username = email;
+        if (username === null) password = username = email;
 
         if (last_name !== null) data.last_name = last_name;
 
@@ -61,6 +61,7 @@
         $.ajax({
             url: "http://localhost:8080/sign/up",
             type: "PUT",
+            xhrFields: {withCredentials: true},
             data: data,
             "success": function (msg) {
                 msgSpan.innerHTML = JSON.stringify(msg);

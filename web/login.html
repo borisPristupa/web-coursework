@@ -20,7 +20,24 @@
 
 <a href="register.html">Go to registration page</a>
 
+<br><br><br><br>
+
+<button onclick="tryFind()">Try business logic</button>
+
 <script type="text/javascript">
+    function tryFind() {
+        $.get({
+            url: "http://localhost:8080/find",
+            xhrFields: {withCredentials: true},
+            "success": function (msg) {
+                document.getElementById("message").innerHTML = "Found: " + JSON.stringify(msg);
+            },
+            "error": function (msg) {
+                document.getElementById("message").innerHTML = "Not found: " + JSON.stringify(msg);
+            }
+        });
+    }
+
     function nullValidById(id) {
         let value = document.getElementById(id).value;
         return value === '' ? null : value;
@@ -42,6 +59,7 @@
 
         $.post({
             url: "http://localhost:8080/sign/in",
+            xhrFields: {withCredentials: true},
             data: data,
             "success": function (msg) {
                 document.getElementById("message").innerHTML = JSON.stringify(msg);
@@ -55,6 +73,7 @@
     function logout() {
         $.post({
             url: "http://localhost:8080/sign/out",
+            xhrFields: {withCredentials: true},
             "success": function (msg) {
                 document.getElementById("message").innerHTML = "You have been successfully logged out: " + JSON.stringify(msg);
             },

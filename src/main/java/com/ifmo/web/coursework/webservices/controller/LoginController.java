@@ -19,7 +19,7 @@ public class LoginController {
     private final HumanRepository humanRepository;
     private final PasswordEncoder encoder;
 
-    @PostMapping("/in")
+    @PostMapping("/in/success")
     @ResponseStatus(HttpStatus.OK)
     public HumanResponse signIn() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
