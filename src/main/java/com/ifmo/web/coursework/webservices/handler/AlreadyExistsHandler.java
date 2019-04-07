@@ -13,7 +13,7 @@ public class AlreadyExistsHandler {
     @ResponseBody
     @ExceptionHandler(AlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse pageNotFoundHandler(AlreadyExistsException e) {
+    public ErrorResponse alreadyExistsHandler(AlreadyExistsException e) {
         return new ErrorResponse(e.getMessage());
     }
 }

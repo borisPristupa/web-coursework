@@ -13,7 +13,7 @@ public class HumanNotFoundHandler {
     @ResponseBody
     @ExceptionHandler(HumanNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse pageNotFoundHandler(HumanNotFoundException e) {
+    public ErrorResponse humanNotFoundHandler(HumanNotFoundException e) {
         return new ErrorResponse(e.getMessage());
     }
 }
