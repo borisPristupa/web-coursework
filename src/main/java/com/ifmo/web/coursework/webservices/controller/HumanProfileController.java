@@ -1,8 +1,11 @@
 package com.ifmo.web.coursework.webservices.controller;
 
+import com.ifmo.web.coursework.data.entity.Human;
 import com.ifmo.web.coursework.data.repository.HumanRepository;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
+import com.ifmo.web.coursework.webservices.exception.AlreadyExistsException;
 import com.ifmo.web.coursework.webservices.exception.HumanNotFoundException;
+import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
 import com.ifmo.web.coursework.webservices.response.HumanResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +26,92 @@ public class HumanProfileController {
         return HumanResponse.fromHuman(humanRepository.findById(id)
                 .orElseThrow(() ->
                         new HumanNotFoundException("No user with id '" + finalId + "' found in DB")));
+    }
+
+    @PutMapping("/edit")
+    @ResponseStatus(HttpStatus.OK)
+    public HumanResponse updateProfile(HumanResponse newProfile) {
+        // Unique data
+        if (null == newProfile.getId()) throw new MissingRequiredArgumentException("id");
+        Human edited = humanRepository.findById(newProfile.getId())
+                .orElseThrow(() -> new HumanNotFoundException("User not found by id " + newProfile.getId()));
+
+        if (null != newProfile.getLogin()) {
+            humanRepository.findByLogin(newProfile.getLogin()).ifPresent(human -> {
+                if (!edited.getHumanId().equals(human.getHumanId()))
+                    throw new AlreadyExistsException("Username " + newProfile.getLogin() + " is already taken");
+            });
+            edited.setLogin(newProfile.getLogin());
+        }
+
+        if (null != newProfile.getEmail()) {
+            humanRepository.findByEmail(newProfile.getEmail()).ifPresent(human -> {
+                if (!edited.getHumanId().equals(human.getHumanId()))
+                    throw new AlreadyExistsException("Email " + newProfile.getEmail() + " is already registered");
+            });
+            edited.setEmail(newProfile.getEmail());
+        }
+
+        if (null != newProfile.getTg_nickname()) {
+            humanRepository.findByTgNickname(newProfile.getTg_nickname()).ifPresent(human -> {
+                if (!edited.getHumanId().equals(human.getHumanId()))
+                    throw new AlreadyExistsException("Telegram nickname " + newProfile.getTg_nickname() + " is already registered");
+            });
+            edited.setEmail(newProfile.getTg_nickname());
+        }
+
+        // Non-unique data:
+
+        if (null != newProfile.getFirst_name())
+            edited.setFirstName(newProfile.getFirst_name());
+
+        if (null != newProfile.getSecond_name())
+            edited.setSecondName(newProfile.getSecond_name());
+
+        if (null != newProfile.getLast_name())
+            edited.setLastName(newProfile.getLast_name());
+
+        // Not important data:
+
+        if (null != newProfile.getBio())
+            edited.setBio(newProfile.getBio());
+
+        if (edited.getLikes() < newProfile.getLikes())
+            edited.setLikes(newProfile.getLikes());
+
+        if (edited.getDislikes() < newProfile.getDislikes())
+            edited.setDislikes(newProfile.getDislikes());
+
+        if (null != newProfile.getBanned())
+            edited.setBanned(newProfile.getBanned());
+
+        if (null != newProfile.getCountry())
+            edited.setCountryId(newProfile.getCountry().getId());
+
+        // Roles:
+
+        if (null != newProfile.getArchaeologist() &&
+                !newProfile.getArchaeologist().equals(edited.getArchaeologist()))
+            edited.setArchaeologist(newProfile.getArchaeologist());
+
+        if (null != newProfile.getResearcher() &&
+                !newProfile.getResearcher().equals(edited.getResearcher()))
+            edited.setResearcher(newProfile.getResearcher());
+
+        if (null != newProfile.getCollector() &&
+                !newProfile.getCollector().equals(edited.getCollector()))
+            edited.setCollector(newProfile.getCollector());
+
+        if (null != newProfile.getSponsor() &&
+                !newProfile.getSponsor().equals(edited.getSponsor()))
+            edited.setSponsor(newProfile.getSponsor());
+
+        if (null != newProfile.getModerator() &&
+                !newProfile.getModerator().equals(edited.getModerator()))
+            edited.setModerator(newProfile.getModerator());
+
+        humanRepository.save(edited);
+        return HumanResponse.fromHuman(edited);
     }
 
     @Autowired

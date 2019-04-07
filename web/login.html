@@ -24,7 +24,26 @@
 
 <button onclick="tryFind()">Try business logic</button>
 
+<br><br><br><br>
+
+<button onclick="tryEdit()">Try sume put</button>
+
+
 <script type="text/javascript">
+    function tryEdit() {
+        $.ajax({
+            url: "http://localhost:8080/human/edit",
+            xhrFields: {withCredentials: true},
+            type: 'PUT',
+            "success": (msg) => {
+                document.getElementById("message").innerHTML = "Edited: " + JSON.stringify(msg);
+            },
+            "error": (msg) => {
+                document.getElementById("message").innerHTML = "Not edited: " + JSON.stringify(msg);
+            }
+        });
+    }
+
     function tryFind() {
         $.get({
             url: "http://localhost:8080/human/get",
