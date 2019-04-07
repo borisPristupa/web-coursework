@@ -7,11 +7,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Component
@@ -31,10 +32,18 @@ public class Authenticator implements AuthenticationManager {
             throw new BadCredentialsException("Wrong username/password");
         }
 
+        ArrayList<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER_" + human.getHumanId()));
+
+        if (human.getModerator()) authorities.add(new SimpleGrantedAuthority("ROLE_MODERATOR"));
+        if (human.getArchaeologist()) authorities.add(new SimpleGrantedAuthority("ROLE_ARCHAEOLOGIST"));
+        if (human.getResearcher()) authorities.add(new SimpleGrantedAuthority("ROLE_RESEARCHER"));
+        if (human.getCollector()) authorities.add(new SimpleGrantedAuthority("ROLE_COLLECTOR"));
+        if (human.getSponsor()) authorities.add(new SimpleGrantedAuthority("ROLE_SPONSOR"));
+
         return new UsernamePasswordAuthenticationToken(authentication.getName(),
                 authentication.getCredentials(),
-                Arrays.asList(new SimpleGrantedAuthority("ROLE_BORIS"),
-                        new SimpleGrantedAuthority("ROLE_USER_" + human.getHumanId()))); // FIXME: 05.04.19
+                authorities);
     }
 
     @Autowired
