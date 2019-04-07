@@ -1,7 +1,8 @@
 package com.ifmo.web.coursework.webservices.controller;
 
-import com.ifmo.web.coursework.entity.Human;
-import com.ifmo.web.coursework.repository.HumanRepository;
+import com.ifmo.web.coursework.data.entity.Human;
+import com.ifmo.web.coursework.data.repository.HumanRepository;
+import com.ifmo.web.coursework.data.utils.HumanUtils;
 import com.ifmo.web.coursework.webservices.exception.AlreadyExistsException;
 import com.ifmo.web.coursework.webservices.response.ErrorResponse;
 import com.ifmo.web.coursework.webservices.response.HumanResponse;
@@ -9,7 +10,6 @@ import com.ifmo.web.coursework.webservices.response.SuccessResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,16 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/sign")
 public class LoginController {
     private final HumanRepository humanRepository;
+    private final HumanUtils humanUtils;
     private final PasswordEncoder encoder;
 
     @PostMapping("/in/success")
     @ResponseStatus(HttpStatus.OK)
     public HumanResponse signIn() {
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        Human human = humanRepository.findByLogin(userName)
-                .orElseThrow(() -> new IllegalStateException("No user " + userName + " found in DB, but present in SecurityContext"));
-
-        return HumanResponse.fromHuman(human);
+        return HumanResponse.fromHuman(humanUtils.getCurrentHuman());
     }
 
     @PutMapping("/up")
@@ -71,8 +68,9 @@ public class LoginController {
     }
 
     @Autowired
-    public LoginController(HumanRepository humanRepository, PasswordEncoder encoder) {
+    public LoginController(HumanRepository humanRepository, HumanUtils humanUtils, PasswordEncoder encoder) {
         this.humanRepository = humanRepository;
+        this.humanUtils = humanUtils;
         this.encoder = encoder;
     }
 }

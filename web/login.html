@@ -27,7 +27,7 @@
 <script type="text/javascript">
     function tryFind() {
         $.get({
-            url: "http://localhost:8080/find",
+            url: "http://localhost:8080/human/get",
             xhrFields: {withCredentials: true},
             "success": function (msg) {
                 document.getElementById("message").innerHTML = "Found: " + JSON.stringify(msg);

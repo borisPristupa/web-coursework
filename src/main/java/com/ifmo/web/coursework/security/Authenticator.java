@@ -1,7 +1,7 @@
 package com.ifmo.web.coursework.security;
 
-import com.ifmo.web.coursework.entity.Human;
-import com.ifmo.web.coursework.repository.HumanRepository;
+import com.ifmo.web.coursework.data.entity.Human;
+import com.ifmo.web.coursework.data.repository.HumanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -34,7 +34,7 @@ public class Authenticator implements AuthenticationManager {
         return new UsernamePasswordAuthenticationToken(authentication.getName(),
                 authentication.getCredentials(),
                 Arrays.asList(new SimpleGrantedAuthority("ROLE_BORIS"),
-                        new SimpleGrantedAuthority("ROLE_USER"))); // FIXME: 05.04.19
+                        new SimpleGrantedAuthority("ROLE_USER_" + human.getHumanId()))); // FIXME: 05.04.19
     }
 
     @Autowired
