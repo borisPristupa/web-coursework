@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HumanResponse {
     private Integer id;
-    private String login;
+    private String username;
     private String first_name, second_name, last_name = "";
     private String bio = "";
     private String vk_id, tg_nickname, email;
@@ -22,9 +22,10 @@ public class HumanResponse {
     private Boolean moderator, researcher, archaeologist, collector, sponsor;
 
     public static HumanResponse fromHuman(Human human) {
+        if (null == human) return null;
         return HumanResponse.builder()
                 .id(human.getHumanId())
-                .login(human.getLogin())
+                .username(human.getLogin())
                 .first_name(human.getFirstName())
                 .second_name(human.getSecondName())
                 .last_name(human.getLastName())

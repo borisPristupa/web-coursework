@@ -36,12 +36,12 @@ public class HumanProfileController {
         Human edited = humanRepository.findById(newProfile.getId())
                 .orElseThrow(() -> new HumanNotFoundException("User not found by id " + newProfile.getId()));
 
-        if (null != newProfile.getLogin()) {
-            humanRepository.findByLogin(newProfile.getLogin()).ifPresent(human -> {
+        if (null != newProfile.getUsername()) {
+            humanRepository.findByLogin(newProfile.getUsername()).ifPresent(human -> {
                 if (!edited.getHumanId().equals(human.getHumanId()))
-                    throw new AlreadyExistsException("Username " + newProfile.getLogin() + " is already taken");
+                    throw new AlreadyExistsException("Username " + newProfile.getUsername() + " is already taken");
             });
-            edited.setLogin(newProfile.getLogin());
+            edited.setLogin(newProfile.getUsername());
         }
 
         if (null != newProfile.getEmail()) {

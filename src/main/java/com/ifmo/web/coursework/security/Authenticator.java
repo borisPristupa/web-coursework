@@ -22,13 +22,13 @@ public class Authenticator implements AuthenticationManager {
     @Override
     public Authentication authenticate(Authentication authentication) throws BadCredentialsException {
         if (null == authentication.getName() || null == authentication.getCredentials()) {
-            throw new BadCredentialsException("No login or password provided!");
+            throw new BadCredentialsException("No username or password provided!");
         }
         Optional<Human> byLogin = humanRepository.findByLogin(authentication.getName());
-        Human human = byLogin.orElseThrow(() -> new BadCredentialsException("Wrong login"));
+        Human human = byLogin.orElseThrow(() -> new BadCredentialsException("Wrong username"));
 
         if (!encoder.matches(authentication.getCredentials().toString(), human.getPassword())) {
-            throw new BadCredentialsException("Wrong login/password");
+            throw new BadCredentialsException("Wrong username/password");
         }
 
         return new UsernamePasswordAuthenticationToken(authentication.getName(),
