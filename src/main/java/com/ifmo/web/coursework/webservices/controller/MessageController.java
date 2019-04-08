@@ -34,7 +34,7 @@ public class MessageController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PutMapping
+    @PostMapping
     public MessageResponse addMessage(MessageResponse messageResponse) {
         ArrayList<String> missing = new ArrayList<>();
         if (null == messageResponse.getChat_id())
