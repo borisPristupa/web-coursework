@@ -1,6 +1,6 @@
 package com.ifmo.web.coursework.webservices.handler;
 
-import com.ifmo.web.coursework.webservices.exception.PageNotFoundException;
+import com.ifmo.web.coursework.webservices.exception.NotFoundException;
 import com.ifmo.web.coursework.webservices.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-public class PageNotFoundHandler {
+public class NotFoundHandler {
     @ResponseBody
-    @ExceptionHandler(PageNotFoundException.class)
+    @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse pageNotFoundHandler(PageNotFoundException e) {
-        return new ErrorResponse(e.getMessage());
+    public ErrorResponse notFoundHandler(NotFoundException e) {
+        return new ErrorResponse("Not found: " + e.getMessage());
     }
 }

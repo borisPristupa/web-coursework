@@ -5,8 +5,8 @@ import com.ifmo.web.coursework.data.repository.HumanRepository;
 import com.ifmo.web.coursework.data.utils.FilterUtils;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
 import com.ifmo.web.coursework.webservices.exception.AlreadyExistsException;
-import com.ifmo.web.coursework.webservices.exception.HumanNotFoundException;
 import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
+import com.ifmo.web.coursework.webservices.exception.NotFoundException;
 import com.ifmo.web.coursework.webservices.response.HumanResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +31,7 @@ public class HumanProfileController {
         Integer finalId = id;
         return HumanResponse.fromHuman(humanRepository.findById(id)
                 .orElseThrow(() ->
-                        new HumanNotFoundException("No user with id '" + finalId + "' found in DB")));
+                        new NotFoundException("No user with id '" + finalId + "' found in DB")));
     }
 
     @PatchMapping("/edit")
@@ -40,7 +40,7 @@ public class HumanProfileController {
         // Unique data
         if (null == newProfile.getId()) throw new MissingRequiredArgumentException("id");
         Human edited = humanRepository.findById(newProfile.getId())
-                .orElseThrow(() -> new HumanNotFoundException("User not found by id " + newProfile.getId()));
+                .orElseThrow(() -> new NotFoundException("User not found by id " + newProfile.getId()));
 
         if (null != newProfile.getUsername()) {
             humanRepository.findByLogin(newProfile.getUsername()).ifPresent(human -> {
