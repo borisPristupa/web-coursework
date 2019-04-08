@@ -1,6 +1,7 @@
 package com.ifmo.web.coursework.config;
 
 import com.ifmo.web.coursework.webservices.handler.BadCredentialsHandler;
+import com.ifmo.web.coursework.webservices.handler.PermissionDeniedHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,7 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,7 +25,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors()
                 .and()
                 .authorizeRequests()
-                    .antMatchers("/sign/**").permitAll()
+                    .antMatchers("/sign/**", "/forbidden").permitAll()
+                    .antMatchers("/human/privileged").hasRole("MODERATOR")
                     .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -35,7 +36,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().logout()
                     .logoutUrl("/sign/out")
                     .logoutSuccessUrl("/sign/out/success");
-        http.exceptionHandling().authenticationEntryPoint(new Http403ForbiddenEntryPoint());
+        http.exceptionHandling().authenticationEntryPoint(new PermissionDeniedHandler());
+        http.exceptionHandling().accessDeniedHandler(new PermissionDeniedHandler());
     }
 
     @Bean

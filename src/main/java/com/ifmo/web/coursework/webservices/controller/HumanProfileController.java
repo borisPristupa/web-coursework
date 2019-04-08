@@ -7,6 +7,7 @@ import com.ifmo.web.coursework.data.utils.HumanUtils;
 import com.ifmo.web.coursework.webservices.exception.AlreadyExistsException;
 import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
 import com.ifmo.web.coursework.webservices.exception.NotFoundException;
+import com.ifmo.web.coursework.webservices.exception.PermissionDeniedException;
 import com.ifmo.web.coursework.webservices.response.HumanResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,10 @@ public class HumanProfileController {
     public HumanResponse updateProfile(HumanResponse newProfile) {
         // Unique data
         if (null == newProfile.getId()) throw new MissingRequiredArgumentException("id");
+        if (newProfile.getId() != humanUtils.getCurrentId())
+            throw new PermissionDeniedException("You are not allowed to " +
+                    "modify other user's personal info");
+
         Human edited = humanRepository.findById(newProfile.getId())
                 .orElseThrow(() -> new NotFoundException("User not found by id " + newProfile.getId()));
 
@@ -100,10 +105,6 @@ public class HumanProfileController {
                 !newProfile.getArchaeologist().equals(edited.getArchaeologist()))
             edited.setArchaeologist(newProfile.getArchaeologist());
 
-        if (null != newProfile.getResearcher() &&
-                !newProfile.getResearcher().equals(edited.getResearcher()))
-            edited.setResearcher(newProfile.getResearcher());
-
         if (null != newProfile.getCollector() &&
                 !newProfile.getCollector().equals(edited.getCollector()))
             edited.setCollector(newProfile.getCollector());
@@ -112,9 +113,31 @@ public class HumanProfileController {
                 !newProfile.getSponsor().equals(edited.getSponsor()))
             edited.setSponsor(newProfile.getSponsor());
 
-        if (null != newProfile.getModerator() &&
-                !newProfile.getModerator().equals(edited.getModerator()))
+        // Privileged roles:
+
+        if (Boolean.FALSE.equals(newProfile.getResearcher()))
+            edited.setResearcher(newProfile.getResearcher());
+
+        if (Boolean.FALSE.equals(newProfile.getModerator()))
             edited.setModerator(newProfile.getModerator());
+
+        humanRepository.save(edited);
+        return HumanResponse.fromHuman(edited);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/privileged")
+    public HumanResponse makePrivileged(@RequestParam("id") int id,
+                                        @RequestParam(value = "researcher", required = false) Boolean researcher,
+                                        @RequestParam(value = "moderator", required = false) Boolean moderator) {
+        Human edited = humanRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found by id " + id));
+
+        if (null != researcher && !researcher.equals(edited.getResearcher()))
+            edited.setResearcher(researcher);
+
+        if (null != moderator && !moderator.equals(edited.getModerator()))
+            edited.setModerator(moderator);
 
         humanRepository.save(edited);
         return HumanResponse.fromHuman(edited);
