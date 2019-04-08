@@ -3,6 +3,7 @@ package com.ifmo.web.coursework.webservices.controller;
 import com.ifmo.web.coursework.data.entity.Message;
 import com.ifmo.web.coursework.data.repository.MessageRepository;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
+import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
 import com.ifmo.web.coursework.webservices.response.HumanResponse;
 import com.ifmo.web.coursework.webservices.response.MessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,17 @@ public class MessageController {
     @ResponseStatus(HttpStatus.CREATED)
     @PutMapping
     public MessageResponse addMessage(MessageResponse messageResponse) {
+        ArrayList<String> missing = new ArrayList<>();
+        if (null == messageResponse.getChat_id())
+            missing.add("chat_id");
+        if (null == messageResponse.getSender())
+            missing.add("sender");
+        if (null == messageResponse.getText())
+            missing.add("text");
+
+        if (!missing.isEmpty())
+            throw new MissingRequiredArgumentException(missing.toArray(new String[0]));
+
         messageResponse.setDate(Timestamp.valueOf(LocalDateTime.now()));
         messageResponse.setSender(HumanResponse.fromHuman(humanUtils.getCurrentHuman()));
 
