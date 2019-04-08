@@ -27,7 +27,7 @@ public class LoginController {
     }
 
     @PutMapping("/up")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public HumanResponse signUp(@RequestParam("username") String username,
                                 @RequestParam("password") String password,
                                 @RequestParam("email") String email,
