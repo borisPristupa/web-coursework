@@ -13,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -47,6 +45,31 @@ public class ChatController {
                         .<ChatResponse, Timestamp>comparing(chat -> chat.getLast_message().getDate())
                         .reversed())
                 .collect(Collectors.toList());
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping
+    public ChatResponse addChat(ChatResponse chatResponse) {
+        ArrayList<String> missing = new ArrayList<>();
+        if (null == chatResponse.getName())
+            missing.add("name");
+        if (null == chatResponse.getMembers())
+            missing.add("members");
+
+        if (!missing.isEmpty())
+            throw new MissingRequiredArgumentException(missing.toArray(new String[0]));
+
+        Chat chat = new Chat();
+        chat.setMembers(
+                chatResponse.getMembers().stream()
+                        .map(r -> humanRepository.getOne(r.getId()))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList()));
+        chat.setName(chatResponse.getName());
+        chat.setDescription(Optional.ofNullable(chatResponse.getDescription()).orElse(""));
+        chatRepository.save(chat);
+
+        return ChatResponse.fromChat(chat);
     }
 
     @ResponseStatus(HttpStatus.OK)
