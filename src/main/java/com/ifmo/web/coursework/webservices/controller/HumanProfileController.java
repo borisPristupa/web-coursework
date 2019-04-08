@@ -23,7 +23,7 @@ public class HumanProfileController {
     private final HumanUtils humanUtils;
     private final FilterUtils filterUtils;
 
-    @GetMapping("/get")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public HumanResponse getProfile(@RequestParam(value = "id", required = false) Integer id) {
         if (null == id) id = humanUtils.getCurrentId();
@@ -34,7 +34,7 @@ public class HumanProfileController {
                         new NotFoundException("No user with id '" + finalId + "' found in DB")));
     }
 
-    @PatchMapping("/edit")
+    @PatchMapping
     @ResponseStatus(HttpStatus.OK)
     public HumanResponse updateProfile(HumanResponse newProfile) {
         // Unique data
