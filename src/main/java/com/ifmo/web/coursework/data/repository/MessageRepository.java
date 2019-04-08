@@ -1,9 +1,8 @@
 package com.ifmo.web.coursework.data.repository;
 
 import com.ifmo.web.coursework.data.entity.Message;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -16,6 +15,5 @@ public interface MessageRepository extends JpaRepository<Message,Integer> {
     List<Message> findAllByBody(String body);
     List<Message> findAllByDate(Date date);
 
-    @Query("select a from Message a where a.chatId = :chat_id order by a.date")
-    List<Message> findAllOrderByDate(@Param("chat_id") Integer chat_id);
+    List<Message> findAllByChatIdOrderByDateDesc(Integer chat_id, Pageable pageable);
 }

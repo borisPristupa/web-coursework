@@ -29,9 +29,12 @@ public interface HumanRepository extends JpaRepository<Human, Integer> {
     @Query("select a from Human a join SubscriptionAuction b on a.humanId = b.humanId WHERE b.auctionId = :auction")
     List<Human> findAllBySubscriptionAuction(@Param("auction") Integer auctionId);
 
-    @Query("select a from Human a join HumanChat b on a.humanId = b.humanId WHERE b.chatId = :chat")
-    List<Human> findAllByHumanChat(@Param("chat") Integer chatId);
-
     @Query("select a from Human a order by ((a.likes + 1)/(a.likes+a.dislikes + 2)) DESC, a.likes DESC")
     List<Human> findAllByPopularity();
+
+    @Query(value = "SELECT  h.* FROM human h " +
+            "JOIN human_chat hc on h.human_id = hc.human_id " +
+            "JOIN chat c on hc.chat_id = c.chat_id " +
+            "WHERE c.chat_id = ?1 GROUP BY h.human_id", nativeQuery = true)
+    List<Human> findAllByChatId(Integer chatId);
 }

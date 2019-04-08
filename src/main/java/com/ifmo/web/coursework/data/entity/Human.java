@@ -1,9 +1,12 @@
 package com.ifmo.web.coursework.data.entity;
 
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Human {
@@ -35,7 +38,6 @@ public class Human {
     private Collection<ExpeditionResult> expeditionResultsByHumanId;
     private Collection<Expedition> expeditionsByHumanId;
     private Country countryByCountryId;
-    private Collection<HumanChat> humanChatsByHumanId;
     private Collection<Message> messagesByHumanId;
     private Collection<ParticipationExpedition> participationExpeditionsByHumanId;
     private Collection<SubscriptionAuction> subscriptionAuctionsByHumanId;
@@ -348,15 +350,6 @@ public class Human {
     }
 
     @OneToMany(mappedBy = "humanByHumanId")
-    public Collection<HumanChat> getHumanChatsByHumanId() {
-        return humanChatsByHumanId;
-    }
-
-    public void setHumanChatsByHumanId(Collection<HumanChat> humanChatsByHumanId) {
-        this.humanChatsByHumanId = humanChatsByHumanId;
-    }
-
-    @OneToMany(mappedBy = "humanByHumanId")
     public Collection<Message> getMessagesByHumanId() {
         return messagesByHumanId;
     }
@@ -390,5 +383,16 @@ public class Human {
 
     public void setSubscriptionExpeditionsByHumanId(Collection<SubscriptionExpedition> subscriptionExpeditionsByHumanId) {
         this.subscriptionExpeditionsByHumanId = subscriptionExpeditionsByHumanId;
+    }
+
+    @Setter
+    private Set<Chat> chats;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "human_chat",
+            joinColumns = {@JoinColumn(name = "human_id")},
+            inverseJoinColumns = {@JoinColumn(name = "chat_id")})
+    public Set<Chat> getChats() {
+        return chats;
     }
 }

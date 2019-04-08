@@ -1,7 +1,11 @@
 package com.ifmo.web.coursework.data.entity;
 
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -9,8 +13,15 @@ public class Chat {
     private Integer chatId;
     private String name;
     private String description;
-    private Collection<HumanChat> humanChatsByChatId;
     private Collection<Message> messagesByChatId;
+
+    @Setter
+    private List<Human> members = Collections.emptyList();
+
+    @Transient
+    public List<Human> getMembers() {
+        return members;
+    }
 
     @Id
     @Column(name = "chat_id", nullable = false)
@@ -58,15 +69,6 @@ public class Chat {
     }
 
     @OneToMany(mappedBy = "chatByChatId")
-    public Collection<HumanChat> getHumanChatsByChatId() {
-        return humanChatsByChatId;
-    }
-
-    public void setHumanChatsByChatId(Collection<HumanChat> humanChatsByChatId) {
-        this.humanChatsByChatId = humanChatsByChatId;
-    }
-
-    @OneToMany(mappedBy = "chatByChatId")
     public Collection<Message> getMessagesByChatId() {
         return messagesByChatId;
     }
@@ -74,4 +76,5 @@ public class Chat {
     public void setMessagesByChatId(Collection<Message> messagesByChatId) {
         this.messagesByChatId = messagesByChatId;
     }
+
 }

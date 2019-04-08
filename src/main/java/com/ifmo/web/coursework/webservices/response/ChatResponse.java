@@ -1,7 +1,6 @@
 package com.ifmo.web.coursework.webservices.response;
 
 import com.ifmo.web.coursework.data.entity.Chat;
-import com.ifmo.web.coursework.data.entity.HumanChat;
 import com.ifmo.web.coursework.data.entity.Message;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,9 +27,8 @@ public class ChatResponse {
                 id(chat.getChatId())
                 .name(chat.getName())
                 .description(chat.getDescription())
-                .members(chat.getHumanChatsByChatId()
+                .members(chat.getMembers()
                         .stream()
-                        .map(HumanChat::getHumanByHumanId)
                         .map(HumanResponse::fromHuman)
                         .collect(Collectors.toList()))
                 .last_message(MessageResponse.fromMessage(
