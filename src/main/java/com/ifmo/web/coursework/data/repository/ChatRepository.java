@@ -16,6 +16,11 @@ public interface ChatRepository extends JpaRepository<Chat,Integer> {
             "WHERE h.human_id = ?1 GROUP BY c.chat_id", nativeQuery = true)
     List<Chat> findAllByHumanId(Integer humanId);
 
+    @Query(nativeQuery = true, value = "INSERT INTO human_chat (chat_id, human_id) VALUES (?1, ?2)")
+    void addMember(Integer chatId, Integer humanId);
+    @Query(nativeQuery = true, value = "DELETE FROM human_chat WHERE chat_id=?1 AND human_id=?2")
+    void removeMember(Integer chatId, Integer humanId);
+
     @Query("select a from Chat a join Message b on a.chatId = b.chatId  order by b.date")
     List<Chat> findAllByMessageOrderByDate();
 

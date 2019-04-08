@@ -27,9 +27,10 @@ public class ChatController {
     private final FilterUtils filterUtils;
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/get")
+    @GetMapping
     public ChatResponse getChat(@RequestParam("id") Integer id) {
-        Chat chat = chatRepository.getOne(id);
+        Chat chat = chatRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Chat not found by id " + id));
         chat.setMembers(humanRepository.findAllByChatId(chat.getChatId()));
         return ChatResponse.fromChat(chat);
     }
@@ -49,7 +50,7 @@ public class ChatController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/edit")
+    @PatchMapping
     public ChatResponse editChat(ChatResponse chatResponse) {
         if (null == chatResponse.getId()) throw new MissingRequiredArgumentException("id");
 
@@ -62,8 +63,16 @@ public class ChatController {
         if (null != chatResponse.getName())
             chat.setName(chatResponse.getName());
 
-//        if (null != chatResponse.getMembers())
-//            chat.set
+        if (null != chatResponse.getMembers()) {
+            chatResponse.getMembers().forEach(humanResponse -> {
+                if (chat.getMembers().stream().noneMatch(human -> human.getHumanId().equals(humanResponse.getId())))
+                    chatRepository.addMember(chat.getChatId(), humanResponse.getId());
+            });
+            chat.getMembers().forEach(human -> {
+                if (chatResponse.getMembers().stream().noneMatch(humanResponse -> human.getHumanId().equals(humanResponse.getId())))
+                    chatRepository.removeMember(chat.getChatId(), human.getHumanId());
+            });
+        }
 
         chatRepository.save(chat);
         chat.setMembers(humanRepository.findAllByChatId(chat.getChatId()));
