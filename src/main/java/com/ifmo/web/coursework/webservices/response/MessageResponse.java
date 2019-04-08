@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MessageResponse {
-    private Integer id;
+    private Integer id, chat_id;
     private String text;
     private Timestamp date;
     private HumanResponse sender;
@@ -21,6 +21,7 @@ public class MessageResponse {
         if (null == message) return null;
         return builder()
                 .id(message.getMessageId())
+                .chat_id(message.getChatId())
                 .text(message.getBody())
                 .date(message.getDate())
                 .sender(HumanResponse.fromHuman(message.getHumanByHumanId()))
