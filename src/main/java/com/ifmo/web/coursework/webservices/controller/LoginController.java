@@ -26,7 +26,7 @@ public class LoginController {
         return HumanResponse.fromHuman(humanUtils.getCurrentHuman());
     }
 
-    @PutMapping("/up")
+    @PostMapping("/up")
     @ResponseStatus(HttpStatus.CREATED)
     public HumanResponse signUp(@RequestParam("username") String username,
                                 @RequestParam("password") String password,
