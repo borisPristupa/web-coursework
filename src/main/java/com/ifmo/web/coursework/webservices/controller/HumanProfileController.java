@@ -2,6 +2,7 @@ package com.ifmo.web.coursework.webservices.controller;
 
 import com.ifmo.web.coursework.data.entity.Human;
 import com.ifmo.web.coursework.data.repository.HumanRepository;
+import com.ifmo.web.coursework.data.utils.FilterUtils;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
 import com.ifmo.web.coursework.webservices.exception.AlreadyExistsException;
 import com.ifmo.web.coursework.webservices.exception.HumanNotFoundException;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class HumanProfileController {
     private final HumanRepository humanRepository;
     private final HumanUtils humanUtils;
+    private final FilterUtils filterUtils;
 
     @GetMapping("/get")
     @ResponseStatus(HttpStatus.OK)
@@ -33,7 +34,7 @@ public class HumanProfileController {
                         new HumanNotFoundException("No user with id '" + finalId + "' found in DB")));
     }
 
-    @PutMapping("/edit")
+    @PatchMapping("/edit")
     @ResponseStatus(HttpStatus.OK)
     public HumanResponse updateProfile(HumanResponse newProfile) {
         // Unique data
@@ -127,11 +128,7 @@ public class HumanProfileController {
                                       @RequestParam("sponsor") boolean sponsor,
                                       @RequestParam(value = "searchfor", required = false, defaultValue = "") String pattern) {
         return humanRepository.findAll().stream()
-                .filter(h -> pattern.trim().isEmpty() ||
-                        Arrays.stream(pattern.trim().split(" "))
-                                .anyMatch(name -> name.equals(h.getFirstName()) ||
-                                        name.equals(h.getSecondName()) ||
-                                        name.equals(h.getLastName())))
+                .filter(filterUtils.nameFilter(pattern, Human::getFirstName, Human::getSecondName, Human::getLastName))
                 .filter(h ->
                         archaeologist && h.getArchaeologist() ||
                                 researcher && h.getResearcher() ||
@@ -146,8 +143,9 @@ public class HumanProfileController {
     }
 
     @Autowired
-    public HumanProfileController(HumanRepository humanRepository, HumanUtils humanUtils) {
+    public HumanProfileController(HumanRepository humanRepository, HumanUtils humanUtils, FilterUtils filterUtils) {
         this.humanRepository = humanRepository;
         this.humanUtils = humanUtils;
+        this.filterUtils = filterUtils;
     }
 }
