@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS artifact (
 
 CREATE TABLE IF NOT EXISTS auction (
 	auction_id serial PRIMARY KEY,
-	artifact_id int NOT NULL REFERENCES artifact ON UPDATE CASCADE ON DELETE CASCADE,
+	artifact_id int NOT NULL UNIQUE REFERENCES artifact ON UPDATE CASCADE ON DELETE CASCADE,
 	price_old numeric,
 	price_new numeric NOT NULL CHECK (price_old < price_new),
 	raiser int REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE,

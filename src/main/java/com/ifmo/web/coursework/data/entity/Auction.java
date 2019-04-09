@@ -1,7 +1,6 @@
 package com.ifmo.web.coursework.data.entity;
 
 import javax.persistence.*;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Objects;
@@ -10,8 +9,8 @@ import java.util.Objects;
 public class Auction {
     private Integer auctionId;
     private Integer artifactId;
-    private BigInteger priceOld;
-    private BigInteger priceNew;
+    private Integer priceOld;
+    private Integer priceNew;
     private Integer raiser;
     private Timestamp betTime;
     private Timestamp startTime;
@@ -42,21 +41,21 @@ public class Auction {
 
     @Basic
     @Column(name = "price_old", nullable = true, precision = 0)
-    public BigInteger getPriceOld() {
+    public Integer getPriceOld() {
         return priceOld;
     }
 
-    public void setPriceOld(BigInteger priceOld) {
+    public void setPriceOld(Integer priceOld) {
         this.priceOld = priceOld;
     }
 
     @Basic
     @Column(name = "price_new", nullable = false, precision = 0)
-    public BigInteger getPriceNew() {
+    public Integer getPriceNew() {
         return priceNew;
     }
 
-    public void setPriceNew(BigInteger priceNew) {
+    public void setPriceNew(Integer priceNew) {
         this.priceNew = priceNew;
     }
 
@@ -120,7 +119,7 @@ public class Auction {
         return Objects.hash(auctionId, artifactId, priceOld, priceNew, raiser, betTime, startTime, endTime);
     }
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "artifact_id", referencedColumnName = "artifact_id", nullable = false)
     public Artifact getArtifactByArtifactId() {
         return artifactByArtifactId;

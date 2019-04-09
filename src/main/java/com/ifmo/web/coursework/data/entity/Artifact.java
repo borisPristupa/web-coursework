@@ -2,7 +2,6 @@ package com.ifmo.web.coursework.data.entity;
 
 import javax.persistence.*;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Objects;
 
 @Entity
@@ -26,7 +25,7 @@ public class Artifact {
     private Country countryByOrigin;
     private Country countryByCountryId;
     private Category categoryByCategoryId;
-    private Collection<Auction> auctionsByArtifactId;
+    private Auction auctionByArtifactId;
     private ExpeditionResult expeditionResultByArtifactId;
 
     @Id
@@ -247,13 +246,13 @@ public class Artifact {
         this.categoryByCategoryId = categoryByCategoryId;
     }
 
-    @OneToMany(mappedBy = "artifactByArtifactId")
-    public Collection<Auction> getAuctionsByArtifactId() {
-        return auctionsByArtifactId;
+    @OneToOne(mappedBy = "artifactByArtifactId")
+    public Auction getAuctionByArtifactId() {
+        return auctionByArtifactId;
     }
 
-    public void setAuctionsByArtifactId(Collection<Auction> auctionsByArtifactId) {
-        this.auctionsByArtifactId = auctionsByArtifactId;
+    public void setAuctionByArtifactId(Auction auctionByArtifactId) {
+        this.auctionByArtifactId = auctionByArtifactId;
     }
 
     @OneToOne(mappedBy = "artifactByArtifactId")
