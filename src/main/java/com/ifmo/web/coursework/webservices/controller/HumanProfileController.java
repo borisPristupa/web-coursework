@@ -1,6 +1,7 @@
 package com.ifmo.web.coursework.webservices.controller;
 
 import com.ifmo.web.coursework.data.entity.Human;
+import com.ifmo.web.coursework.data.repository.CountryRepository;
 import com.ifmo.web.coursework.data.repository.HumanRepository;
 import com.ifmo.web.coursework.data.utils.FilterUtils;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/human")
 public class HumanProfileController {
     private final HumanRepository humanRepository;
+    private final CountryRepository countryRepository;
     private final HumanUtils humanUtils;
     private final FilterUtils filterUtils;
 
@@ -97,7 +99,11 @@ public class HumanProfileController {
             edited.setBanned(newProfile.getBanned());
 
         if (null != newProfile.getCountry())
-            edited.setCountryId(newProfile.getCountry().getId());
+            edited.setCountryId(
+                    countryRepository.findByName(newProfile.getCountry())
+                            .orElseThrow(() ->
+                                    new NotFoundException("Not found coutry by name " + newProfile.getCountry()))
+                            .getCountryId());
 
         // Roles:
 
@@ -166,8 +172,9 @@ public class HumanProfileController {
     }
 
     @Autowired
-    public HumanProfileController(HumanRepository humanRepository, HumanUtils humanUtils, FilterUtils filterUtils) {
+    public HumanProfileController(HumanRepository humanRepository, CountryRepository countryRepository, HumanUtils humanUtils, FilterUtils filterUtils) {
         this.humanRepository = humanRepository;
+        this.countryRepository = countryRepository;
         this.humanUtils = humanUtils;
         this.filterUtils = filterUtils;
     }

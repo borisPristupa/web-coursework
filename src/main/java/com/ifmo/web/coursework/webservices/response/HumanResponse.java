@@ -18,7 +18,7 @@ public class HumanResponse {
     private String vk_id, tg_nickname, email;
     private Integer likes = 0, dislikes = 0;
     private Boolean banned;
-    private CountryResponse country;
+    private String country;
     private Boolean moderator, researcher, archaeologist, collector, sponsor;
 
     public static HumanResponse fromHuman(Human human) {
@@ -37,7 +37,7 @@ public class HumanResponse {
                 .likes(human.getLikes())
                 .dislikes(human.getDislikes())
                 .banned(human.getBanned())
-                .country(CountryResponse.fromCountry(human.getCountryByCountryId()))
+                .country(human.getCountryByCountryId().getName())
 
                 .moderator(human.getModerator())
                 .researcher(human.getResearcher())
