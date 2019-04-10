@@ -26,12 +26,12 @@ public class PermissionDeniedHandler implements AccessDeniedHandler, Authenticat
     }
 
     @Override
-    public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AccessDeniedException e) throws IOException {
-        httpServletResponse.sendRedirect("/forbidden");
+    public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AccessDeniedException e) throws IOException, ServletException {
+        httpServletRequest.getRequestDispatcher("/forbidden").forward(httpServletRequest, httpServletResponse);
     }
 
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
-        httpServletResponse.sendRedirect("/forbidden");
+        httpServletRequest.getRequestDispatcher("/forbidden").forward(httpServletRequest, httpServletResponse);
     }
 }
