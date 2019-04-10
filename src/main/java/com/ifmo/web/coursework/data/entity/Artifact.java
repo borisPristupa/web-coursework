@@ -9,7 +9,7 @@ public class Artifact {
     private Integer artifactId;
     private String name;
     private Boolean approved;
-    private String description;
+    private String description ="";
     private Integer ageId;
     private byte[] avatarSmall;
     private byte[] avatarFull;
