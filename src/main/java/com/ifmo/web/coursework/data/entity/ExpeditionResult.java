@@ -14,6 +14,7 @@ public class ExpeditionResult {
     private Human resultFinderByHumanId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "artifact_id", nullable = false, insertable = false, updatable = false)
     public Integer getArtifactId() {
         return artifactId;

@@ -1,9 +1,6 @@
 package com.ifmo.web.coursework.data.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -15,6 +12,7 @@ public class Route {
     private Collection<Stay> staysByRouteId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "route_id", nullable = false)
     public Integer getRouteId() {
         return routeId;

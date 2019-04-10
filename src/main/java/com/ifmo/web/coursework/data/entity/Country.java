@@ -13,6 +13,7 @@ public class Country {
     private Collection<Human> humansByCountryId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "country_id", nullable = false)
     public Integer getCountryId() {
         return countryId;

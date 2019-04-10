@@ -16,6 +16,7 @@ public class Donation {
     private Expedition expeditionByExpeditionId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "donation_id", nullable = false)
     public Integer getDonationId() {
         return donationId;

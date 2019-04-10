@@ -15,6 +15,7 @@ public class ParticipationExpedition {
     private Human humanByHumanId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "participation_expedition_id", nullable = false)
     public Integer getParticipationExpeditionId() {
         return participationExpeditionId;

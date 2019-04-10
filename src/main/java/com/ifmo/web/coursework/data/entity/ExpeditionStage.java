@@ -12,6 +12,7 @@ public class ExpeditionStage {
     private Collection<Expedition> expeditionsByStageId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stage_id", nullable = false)
     public Integer getStageId() {
         return stageId;

@@ -29,6 +29,7 @@ public class Artifact {
     private ExpeditionResult expeditionResultByArtifactId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "artifact_id", nullable = false)
     public Integer getArtifactId() {
         return artifactId;

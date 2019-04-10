@@ -20,6 +20,7 @@ public class Auction {
     private Collection<SubscriptionAuction> subscriptionAuctionsByAuctionId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "auction_id", nullable = false)
     public Integer getAuctionId() {
         return auctionId;

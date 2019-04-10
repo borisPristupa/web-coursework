@@ -11,6 +11,7 @@ public class Age {
     private Collection<Artifact> artifactsByAgeId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "age_id", nullable = false)
     public Integer getAgeId() {
         return ageId;

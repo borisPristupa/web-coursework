@@ -11,6 +11,7 @@ public class Category {
     private Collection<Artifact> artifactsByCategoryId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id", nullable = false)
     public Integer getCategoryId() {
         return categoryId;

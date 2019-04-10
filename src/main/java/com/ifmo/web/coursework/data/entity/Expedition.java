@@ -29,6 +29,7 @@ public class Expedition {
     private Collection<SubscriptionExpedition> subscriptionExpeditionsByExpeditionId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "expedition_id", nullable = false)
     public Integer getExpeditionId() {
         return expeditionId;

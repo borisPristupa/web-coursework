@@ -24,6 +24,7 @@ public class Chat {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_id", nullable = false)
     public Integer getChatId() {
         return chatId;

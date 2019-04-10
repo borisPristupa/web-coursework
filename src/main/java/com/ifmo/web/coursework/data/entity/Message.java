@@ -15,6 +15,7 @@ public class Message {
     private Human humanByHumanId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id", nullable = false)
     public Integer getMessageId() {
         return messageId;

@@ -15,6 +15,7 @@ public class Stay {
     private Route routeByRouteId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stay_id", nullable = false)
     public Integer getStayId() {
         return stayId;
