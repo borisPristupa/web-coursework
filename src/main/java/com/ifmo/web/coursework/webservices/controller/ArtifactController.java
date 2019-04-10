@@ -38,7 +38,7 @@ public class ArtifactController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public ArtifactResponse addArtifact(ArtifactResponse artifactResponse) {
         ArrayList<String> missing = new ArrayList<>();
         if (null == artifactResponse.getType())
