@@ -1,7 +1,6 @@
 package com.ifmo.web.coursework.data.entity;
 
 import javax.persistence.*;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -11,7 +10,7 @@ public class Donation {
     private Integer donatorId;
     private Integer expeditionId;
     private Timestamp time;
-    private BigInteger amount;
+    private Integer amount;
     private Human humanByDonator;
     private Expedition expeditionByExpeditionId;
 
@@ -58,11 +57,11 @@ public class Donation {
 
     @Basic
     @Column(name = "amount", nullable = false, precision = 0)
-    public BigInteger getAmount() {
+    public Integer getAmount() {
         return amount;
     }
 
-    public void setAmount(BigInteger amount) {
+    public void setAmount(Integer amount) {
         this.amount = amount;
     }
 

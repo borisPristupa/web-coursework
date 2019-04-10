@@ -1,7 +1,6 @@
 package com.ifmo.web.coursework.data.entity;
 
 import javax.persistence.*;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
@@ -13,8 +12,8 @@ public class Expedition {
     private String description;
     private byte[] avatarSmall;
     private byte[] avatarFull;
-    private BigInteger costs;
-    private BigInteger currentSum;
+    private Integer costs;
+    private Integer currentSum;
     private Integer stageId;
     private Boolean banned;
     private Integer routePlan;
@@ -81,21 +80,21 @@ public class Expedition {
 
     @Basic
     @Column(name = "costs", nullable = false, precision = 0)
-    public BigInteger getCosts() {
+    public Integer getCosts() {
         return costs;
     }
 
-    public void setCosts(BigInteger costs) {
+    public void setCosts(Integer costs) {
         this.costs = costs;
     }
 
     @Basic
     @Column(name = "current_sum", nullable = false, precision = 0)
-    public BigInteger getCurrentSum() {
+    public Integer getCurrentSum() {
         return currentSum;
     }
 
-    public void setCurrentSum(BigInteger currentSum) {
+    public void setCurrentSum(Integer currentSum) {
         this.currentSum = currentSum;
     }
 
