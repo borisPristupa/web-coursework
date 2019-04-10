@@ -7,9 +7,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface ArtifactRepository extends JpaRepository<Artifact, Integer> {
+
+    Optional<Artifact> findFirstByOrderByArtifactIdDesc();
+
+    Optional<Artifact> findByNameAndAgeByAgeId_DescriptionAndCategoryByCategoryId_Name(String name, String age, String type);
 
     //по цене
     @Query("Select a from Artifact a  join Auction b  on a.artifactId=b.artifactId where b.priceNew between :price1 and :price2")
@@ -43,7 +48,9 @@ public interface ArtifactRepository extends JpaRepository<Artifact, Integer> {
     List<Artifact> findAllByOwner(Integer owner);
 
     List<Artifact> findAllByBannedIsFalse(Pageable pageable);
+
     List<Artifact> findAllAuctionByArtifactIdIsNullAndBannedIsFalse(Pageable pageable);
+
     List<Artifact> findAllAuctionByArtifactIdNotNullAndBannedIsFalse(Pageable pageable);
 
     List<Artifact> findAllByApproved(Boolean approved);
