@@ -92,6 +92,31 @@ public class ArtifactController {
                         ));
     }
 
+    @PatchMapping("/privileged/ban")
+    @ResponseStatus(HttpStatus.OK)
+    public ArtifactResponse ban(@RequestParam("id") Integer id,
+                                @RequestParam("banned") Boolean banned) {
+        Artifact artifact = artifactRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Artifact not found by id '" + id + "'"));
+        artifact.setBanned(banned);
+        artifactRepository.save(artifact);
+        return ArtifactResponse.fromArtifact(artifact);
+    }
+
+    @PatchMapping("/privileged/approve")
+    //artifact/priveleged/approve
+    @ResponseStatus(HttpStatus.OK)
+    public ArtifactResponse approve(@RequestParam("id") Integer id,
+                                    @RequestParam("approved") Boolean approved) {
+        Artifact artifact = artifactRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Artifact not found by id '" + id + "'"));
+        artifact.setApproved(approved);
+        artifact.setHumanByApprover(humanUtils.getCurrentHuman());
+        artifactRepository.save(artifact);
+        return ArtifactResponse.fromArtifact(artifact);
+
+    }
+
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
     public List<ArtifactResponse> search(@RequestParam(value = "amount", required = false, defaultValue = "20") int amount,
