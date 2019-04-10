@@ -1,10 +1,13 @@
 package com.ifmo.web.coursework.webservices.response;
 
+import com.ifmo.web.coursework.data.entity.Country;
 import com.ifmo.web.coursework.data.entity.Human;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Optional;
 
 @Data
 @Builder
@@ -37,7 +40,9 @@ public class HumanResponse {
                 .likes(human.getLikes())
                 .dislikes(human.getDislikes())
                 .banned(human.getBanned())
-                .country(human.getCountryByCountryId().getName())
+                .country(Optional.ofNullable(human.getCountryByCountryId())
+                        .map(Country::getName)
+                        .orElse(null))
 
                 .moderator(human.getModerator())
                 .researcher(human.getResearcher())

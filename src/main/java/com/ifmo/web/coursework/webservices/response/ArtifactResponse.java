@@ -1,10 +1,14 @@
 package com.ifmo.web.coursework.webservices.response;
 
 import com.ifmo.web.coursework.data.entity.Artifact;
+import com.ifmo.web.coursework.data.entity.Category;
+import com.ifmo.web.coursework.data.entity.Country;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Optional;
 
 @Data
 @Builder
@@ -22,9 +26,13 @@ public class ArtifactResponse {
         return builder()
                 .id(artifact.getArtifactId())
                 .name(artifact.getName())
-                .type(artifact.getCategoryByCategoryId().getName())
+                .type(Optional.ofNullable(artifact.getCategoryByCategoryId())
+                        .map(Category::getName)
+                        .orElse(null))
                 .description(artifact.getDescription())
-                .country(artifact.getCountryByCountryId().getName())
+                .country(Optional.ofNullable(artifact.getCountryByCountryId())
+                        .map(Country::getName)
+                        .orElse(null))
                 .age(artifact.getAgeByAgeId().getDescription())
                 .auction(AuctionResponse.fromAuction(artifact.getAuctionByArtifactId()))
 

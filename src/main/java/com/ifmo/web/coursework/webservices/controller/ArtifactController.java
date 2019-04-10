@@ -104,7 +104,6 @@ public class ArtifactController {
     }
 
     @PatchMapping("/privileged/approve")
-    //artifact/priveleged/approve
     @ResponseStatus(HttpStatus.OK)
     public ArtifactResponse approve(@RequestParam("id") Integer id,
                                     @RequestParam("approved") Boolean approved) {

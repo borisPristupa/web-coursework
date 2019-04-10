@@ -151,10 +151,10 @@ public class HumanProfileController {
 
     @GetMapping("/search")
     public List<HumanResponse> search(@RequestParam(value = "amount", required = false, defaultValue = "20") int amount,
-                                      @RequestParam("archaeologist") boolean archaeologist,
-                                      @RequestParam("researcher") boolean researcher,
-                                      @RequestParam("collector") boolean collector,
-                                      @RequestParam("sponsor") boolean sponsor,
+                                      @RequestParam("archaeologist") Boolean archaeologist,
+                                      @RequestParam("researcher") Boolean researcher,
+                                      @RequestParam("collector") Boolean collector,
+                                      @RequestParam("sponsor") Boolean sponsor,
                                       @RequestParam(value = "searchfor", required = false, defaultValue = "") String pattern) {
         return humanRepository.findAll().stream()
                 .filter(filterUtils.nameFilter(pattern, Human::getFirstName, Human::getSecondName, Human::getLastName))
