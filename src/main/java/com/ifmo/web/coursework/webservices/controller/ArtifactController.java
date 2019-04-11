@@ -1,15 +1,12 @@
 package com.ifmo.web.coursework.webservices.controller;
 
-import com.ifmo.web.coursework.data.entity.Artifact;
-import com.ifmo.web.coursework.data.entity.Category;
-import com.ifmo.web.coursework.data.repository.AgeRepository;
-import com.ifmo.web.coursework.data.repository.ArtifactRepository;
-import com.ifmo.web.coursework.data.repository.CategoryRepository;
-import com.ifmo.web.coursework.data.repository.CountryRepository;
+import com.ifmo.web.coursework.data.entity.*;
+import com.ifmo.web.coursework.data.repository.*;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
 import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
 import com.ifmo.web.coursework.webservices.exception.NotFoundException;
 import com.ifmo.web.coursework.webservices.response.ArtifactResponse;
+import com.ifmo.web.coursework.webservices.response.SuccessResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
@@ -19,12 +16,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/artifact")
 public class ArtifactController {
     private final ArtifactRepository artifactRepository;
+    private final AuctionRepository auctionRepository;
+    private final SubscriptionAuctionRepository subscriptionRepository;
     private final CategoryRepository categoryRepository;
     private final AgeRepository ageRepository;
     private final CountryRepository countryRepository;
@@ -158,9 +158,44 @@ public class ArtifactController {
                 .collect(Collectors.toList());
     }
 
+        @PatchMapping("/subscribe")
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponse subscribe(@RequestParam("auction_id") Integer auctionId,
+                                     @RequestParam(value = "subscribed", required = false, defaultValue = "true") Boolean subscribed) {
+        Auction auction = auctionRepository.findById(auctionId).orElseThrow(() ->
+                new NotFoundException("Auction not found by id '" + auctionId + "'"));
+
+        SubscriptionAuctionPK pk = new SubscriptionAuctionPK();
+        pk.setAuctionId(auctionId);
+        pk.setHumanId(humanUtils.getCurrentId());
+
+        if (subscribed) {
+            if (subscriptionRepository.existsById(pk)) return new SuccessResponse("Already subscribed");
+
+            SubscriptionAuction subscriptionAuction = new SubscriptionAuction();
+            subscriptionAuction.setAuctionId(auction.getAuctionId());
+            subscriptionAuction.setHumanId(humanUtils.getCurrentId());
+            subscriptionRepository.save(subscriptionAuction);
+
+            return new SuccessResponse("Subscribed");
+        } else {
+            Optional<SubscriptionAuction> byId = subscriptionRepository.findById(pk);
+
+            if (byId.isPresent()) {
+                subscriptionRepository.delete(byId.get());
+                return new SuccessResponse("Unsubscribed");
+            }
+
+            return new SuccessResponse("Not subscribed yet");
+        }
+    }
+
+
     @Autowired
-    public ArtifactController(ArtifactRepository artifactRepository, CategoryRepository categoryRepository, AgeRepository ageRepository, CountryRepository countryRepository, HumanUtils humanUtils) {
+    public ArtifactController(ArtifactRepository artifactRepository, AuctionRepository auctionRepository, SubscriptionAuctionRepository subscriptionRepository, CategoryRepository categoryRepository, AgeRepository ageRepository, CountryRepository countryRepository, HumanUtils humanUtils) {
         this.artifactRepository = artifactRepository;
+        this.auctionRepository = auctionRepository;
+        this.subscriptionRepository = subscriptionRepository;
         this.categoryRepository = categoryRepository;
         this.ageRepository = ageRepository;
         this.countryRepository = countryRepository;

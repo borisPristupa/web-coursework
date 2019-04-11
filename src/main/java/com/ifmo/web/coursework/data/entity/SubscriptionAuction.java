@@ -1,36 +1,28 @@
 package com.ifmo.web.coursework.data.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Data
 @Table(name = "subscription_auction", schema = "public", catalog = "postgres")
 @IdClass(SubscriptionAuctionPK.class)
 public class SubscriptionAuction {
-    private Integer humanId;
-    private Integer auctionId;
-    private Human humanByHumanId;
-    private Auction auctionByAuctionId;
-
     @Id
     @Column(name = "human_id", nullable = false)
-    public Integer getHumanId() {
-        return humanId;
-    }
-
-    public void setHumanId(Integer humanId) {
-        this.humanId = humanId;
-    }
-
+    private Integer humanId;
     @Id
     @Column(name = "auction_id", nullable = false)
-    public Integer getAuctionId() {
-        return auctionId;
-    }
+    private Integer auctionId;
 
-    public void setAuctionId(Integer auctionId) {
-        this.auctionId = auctionId;
-    }
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "human_id", referencedColumnName = "human_id", nullable = false, insertable = false, updatable = false)
+    private Human humanByHumanId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "auction_id", referencedColumnName = "auction_id", nullable = false, insertable = false, updatable = false)
+    private Auction auctionByAuctionId;
 
     @Override
     public boolean equals(Object o) {
@@ -46,23 +38,4 @@ public class SubscriptionAuction {
         return Objects.hash(humanId, auctionId);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "human_id", referencedColumnName = "human_id", nullable = false)
-    public Human getHumanByHumanId() {
-        return humanByHumanId;
-    }
-
-    public void setHumanByHumanId(Human humanByHumanId) {
-        this.humanByHumanId = humanByHumanId;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "auction_id", referencedColumnName = "auction_id", nullable = false)
-    public Auction getAuctionByAuctionId() {
-        return auctionByAuctionId;
-    }
-
-    public void setAuctionByAuctionId(Auction auctionByAuctionId) {
-        this.auctionByAuctionId = auctionByAuctionId;
-    }
 }
