@@ -2,11 +2,12 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
-import Main from './Main'
+import BootstrapVue from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-Vue.config.productionTip = false
 
-/* eslint-disable no-new */
+
 new Vue({
   el: '#app',
   component:'Auth',
@@ -19,4 +20,6 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
+
+
 
