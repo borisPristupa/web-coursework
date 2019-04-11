@@ -1,11 +1,13 @@
 package com.ifmo.web.coursework.webservices.controller;
 
+import com.ifmo.web.coursework.data.entity.Artifact;
 import com.ifmo.web.coursework.data.entity.Expedition;
 import com.ifmo.web.coursework.data.repository.ExpeditionRepository;
 import com.ifmo.web.coursework.data.repository.ExpeditionStageRepository;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
 import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
 import com.ifmo.web.coursework.webservices.exception.NotFoundException;
+import com.ifmo.web.coursework.webservices.response.ArtifactResponse;
 import com.ifmo.web.coursework.webservices.response.ExpeditionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -85,6 +87,17 @@ public class ExpeditionController {
                 .map(ExpeditionResponse::fromExpedition)
                 .filter(expeditionResponse -> stages.isEmpty() || stages.contains(expeditionResponse.getStage()))
                 .collect(Collectors.toList());
+    }
+
+    @PatchMapping("/privileged/ban")
+    @ResponseStatus(HttpStatus.OK)
+    public ExpeditionResponse ban(@RequestParam("id") Integer id,
+                                  @RequestParam("banned") Boolean banned) {
+        Expedition expedition = expeditionRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Expedition not found by id '" + id + "'"));
+        expedition.setBanned(banned);
+        expeditionRepository.save(expedition);
+        return ExpeditionResponse.fromExpedition(expedition);
     }
 
 
