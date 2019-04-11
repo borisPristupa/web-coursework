@@ -1,36 +1,29 @@
 package com.ifmo.web.coursework.data.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Data
 @Table(name = "subscription_expedition", schema = "public", catalog = "postgres")
 @IdClass(SubscriptionExpeditionPK.class)
 public class SubscriptionExpedition {
-    private Integer humanId;
+
+    @Id
+    @Column(name = "expedition_id")
     private Integer expeditionId;
+    @Id
+    @Column(name = "human_id")
+    private Integer humanId;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "human_id", referencedColumnName = "human_id", nullable = false, updatable = false, insertable = false)
     private Human humanByHumanId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "expedition_id", referencedColumnName = "expedition_id", nullable = false,  updatable = false, insertable = false)
     private Expedition expeditionByExpeditionId;
-
-    @Id
-    @Column(name = "human_id", nullable = false)
-    public Integer getHumanId() {
-        return humanId;
-    }
-
-    public void setHumanId(Integer humanId) {
-        this.humanId = humanId;
-    }
-
-    @Id
-    @Column(name = "expedition_id", nullable = false)
-    public Integer getExpeditionId() {
-        return expeditionId;
-    }
-
-    public void setExpeditionId(Integer expeditionId) {
-        this.expeditionId = expeditionId;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -46,23 +39,4 @@ public class SubscriptionExpedition {
         return Objects.hash(humanId, expeditionId);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "human_id", referencedColumnName = "human_id", nullable = false)
-    public Human getHumanByHumanId() {
-        return humanByHumanId;
-    }
-
-    public void setHumanByHumanId(Human humanByHumanId) {
-        this.humanByHumanId = humanByHumanId;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "expedition_id", referencedColumnName = "expedition_id", nullable = false)
-    public Expedition getExpeditionByExpeditionId() {
-        return expeditionByExpeditionId;
-    }
-
-    public void setExpeditionByExpeditionId(Expedition expeditionByExpeditionId) {
-        this.expeditionByExpeditionId = expeditionByExpeditionId;
-    }
 }

@@ -1,14 +1,16 @@
 package com.ifmo.web.coursework.webservices.controller;
 
-import com.ifmo.web.coursework.data.entity.Artifact;
 import com.ifmo.web.coursework.data.entity.Expedition;
+import com.ifmo.web.coursework.data.entity.SubscriptionExpedition;
+import com.ifmo.web.coursework.data.entity.SubscriptionExpeditionPK;
 import com.ifmo.web.coursework.data.repository.ExpeditionRepository;
 import com.ifmo.web.coursework.data.repository.ExpeditionStageRepository;
+import com.ifmo.web.coursework.data.repository.SubscriptionExpeditionRepository;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
 import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
 import com.ifmo.web.coursework.webservices.exception.NotFoundException;
-import com.ifmo.web.coursework.webservices.response.ArtifactResponse;
 import com.ifmo.web.coursework.webservices.response.ExpeditionResponse;
+import com.ifmo.web.coursework.webservices.response.SuccessResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 public class ExpeditionController {
     private final ExpeditionRepository expeditionRepository;
     private final ExpeditionStageRepository stageRepository;
+    private final SubscriptionExpeditionRepository subscriptionRepository;
     private final HumanUtils humanUtils;
 
     @GetMapping
@@ -100,11 +104,44 @@ public class ExpeditionController {
         return ExpeditionResponse.fromExpedition(expedition);
     }
 
+    @PatchMapping("/subscribe")
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponse subscribe(@RequestParam("expedition_id") Integer expeditionId,
+                                     @RequestParam(value = "subscribed", required = false, defaultValue = "true") Boolean subscribed) {
+        Expedition expedition = expeditionRepository.findById(expeditionId).orElseThrow(() ->
+                new NotFoundException("Expedition not found by id '" + expeditionId + "'"));
+
+        SubscriptionExpeditionPK pk = new SubscriptionExpeditionPK();
+        pk.setExpeditionId(expeditionId);
+        pk.setHumanId(humanUtils.getCurrentId());
+
+        if (subscribed) {
+            if (subscriptionRepository.existsById(pk)) return new SuccessResponse("Already subscribed");
+
+            SubscriptionExpedition subscriptionExpedition = new SubscriptionExpedition();
+            subscriptionExpedition.setExpeditionId(expedition.getExpeditionId());
+            subscriptionExpedition.setHumanId(humanUtils.getCurrentId());
+            subscriptionRepository.save(subscriptionExpedition);
+
+            return new SuccessResponse("Subscribed");
+        } else {
+            Optional<SubscriptionExpedition> byId = subscriptionRepository.findById(pk);
+
+            if (byId.isPresent()) {
+                subscriptionRepository.delete(byId.get());
+                return new SuccessResponse("Unsubscribed");
+            }
+
+            return new SuccessResponse("Not subscribed yet");
+        }
+    }
+
 
     @Autowired
-    public ExpeditionController(ExpeditionRepository expeditionRepository, ExpeditionStageRepository stageRepository, HumanUtils humanUtils) {
+    public ExpeditionController(ExpeditionRepository expeditionRepository, ExpeditionStageRepository stageRepository, SubscriptionExpeditionRepository subscriptionRepository, HumanUtils humanUtils) {
         this.expeditionRepository = expeditionRepository;
         this.stageRepository = stageRepository;
+        this.subscriptionRepository = subscriptionRepository;
         this.humanUtils = humanUtils;
     }
 }
