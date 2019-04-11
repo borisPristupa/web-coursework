@@ -123,9 +123,12 @@ public class ArtifactController {
                                          @RequestParam(value = "on_auction", required = false) Boolean auctioned,
                                          @RequestParam("types[]") List<String> types,
                                          @RequestParam("ages[]") List<String> ages,
-                                         @RequestParam("countries[]") List<String> countries,
+                                         @RequestParam("country") String country,
                                          @RequestParam(value = "price_min", required = false) Integer priceMin,
                                          @RequestParam(value = "price_max", required = false) Integer priceMax) {
+        if (!countryRepository.findByName(country).isPresent())
+            throw new NotFoundException("Country not found '" + country + "'");
+
         List<Artifact> artifacts;
         Pageable pages = PageRequest.of(page, amount);
 
@@ -143,7 +146,7 @@ public class ArtifactController {
                 .map(ArtifactResponse::fromArtifact)
                 .filter(artifactResponse -> types.isEmpty() || types.contains(artifactResponse.getType()))
                 .filter(artifactResponse -> ages.isEmpty() || ages.contains(artifactResponse.getAge()))
-                .filter(artifactResponse -> countries.isEmpty() || countries.contains(artifactResponse.getCountry()))
+                .filter(artifactResponse -> country.equals(artifactResponse.getCountry()))
                 .collect(Collectors.toList());
     }
 
