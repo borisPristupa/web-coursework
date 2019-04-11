@@ -4,30 +4,49 @@
 
       <div @input="setinfo" class="row">
         <div class="col-12 d-flex flex-row">
-          <h1 class="col-4 p-2">Логин</h1><input class="ml-auto col-7 p-2  backlight" name="login" @keyup.enter="test" v-model="aut.login" :placeholder="loginplaceholder">
+          <h1 class="col-4 p-2">Логин</h1><input class="ml-auto col-7 p-2  backlight" name="login" @keyup.enter="validation" v-model="aut.login" :placeholder="loginplaceholder">
         </div>
 
         <div class="col-12 d-flex flex-row">
-          <h1 class=" col-4 p-2">Пароль</h1><input class="ml-auto col-7 p-2  backlight" name="password" @keyup.enter="test" v-model="aut.password" type="password" :placeholder="passplaceholder">
+          <h1 class=" col-4 p-2">Пароль</h1><input class="ml-auto col-7 p-2  backlight" name="password" @keyup.enter="validation" v-model="aut.password" type="password" :placeholder="passplaceholder">
         </div>
+        <samp class="col-12 d-flex justify-content-center">{{this.errormsg}}</samp>
         <div class="col-12 d-flex justify-content-center">
-          <button class="col-4 signbtn" @keyup.enter="test" @click="test">Вход</button>
+          <button class="col-4 signbtn"  @click="validation">Вход</button>
+          <!--@keyup.enter="setinfo"-->
         </div>
+
       </div>
 
     </div>
 
 </template>
 
+
+
 <script>
+  var $ = require('jquery')
+  window.jQuery = $ //для подкл jquery
   export default {
     name:'Auth',
+    components:{
+      $//для подкл jquery
+    },
+    created: function () {
+      $(document).ready(function ($) {
+      })
+    },
     data(){
+
       return {
         aut:{
           login: '',
           password: '',
-          hasAccess: false},
+          hasAccess: false
+        },
+
+        errormsg:'',
+
         loginplaceholder:'Логин',
         passplaceholder:'Пароль'
       }
@@ -36,20 +55,50 @@
       setinfo:function(){
         this.$emit('getinfo',this.aut)
       },
-      test:function(){
+      validation:function(){
         if (this.aut.login ==''){
           this.loginplaceholder = 'строка пуста'
         }else if (this.aut.password ==''){
           this.passplaceholder = 'строка пуста'
-        }else if (this.aut.login == 'n' && this.aut.password == 'q') {   // тут обработка запроса
-          this.aut.hasAccess = true;
+        }else {
+          this.setuserdata();// тут обработка запроса
         }
       },
 
-      sign_in:function () {
-        Auth.login;
-        alert('try to sign   ' + this.login +'  '+this.password )
-      }
+
+      setuserdata:function(){
+          var self = this;
+          $.ajax({
+            type:'POST',
+            url: 'http://localhost:8181/sign/in',
+            xhrFields: {withCredentials: true},
+            data: {
+              username: this.aut.login,
+              password: this.aut.password
+            },
+
+            success: function(data){
+              self.aut.hasAccess = true;
+              const parsed = JSON.stringify(self.aut);
+              LocalStorage.setItem('client',parsed)
+            },
+            error: (msg)=> {
+              console.log(msg.responseText);
+              console.log(msg.status);
+
+              self.errormsg = 'Сервер передал: '+ JSON.parse(msg.responseText).error;
+              // var stat = status;
+              // alert(stat);
+              // var massage = JSON.parse(msg)
+              // alert(massage)
+              // self.errormsg = massage.error;
+              // console.log(msg + '\n' +stat);
+              // alert('test')
+
+            }
+          });
+
+      },
     }
   }
 </script>

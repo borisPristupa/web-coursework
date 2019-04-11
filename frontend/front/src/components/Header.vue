@@ -83,7 +83,7 @@ import Help from './folders/Help/Help'
           }
         */
         // for people  { "namemsgs": {"Ford":{"date":"1210/12/12","msgs":["lol","ford"]}, "BMW":{"date":"1211/12/12","msgs":["lol","bmw"]}, "Fiat":{"date":"1212/12/12","msgs":["lol","kek"]}}}
-        component:'Expedition', //default component
+        component:'Own', //default component
         buttons:[
           {name:'People',
           title:'Люди'},

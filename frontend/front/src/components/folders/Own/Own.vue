@@ -22,18 +22,18 @@
             </div>
           </div>
 
-          <div id="contact" class="col-md-4 col-12 align-self-center">
+          <div id="contact" class="col-md-4 col-12 d-md-flex align-self-center align-self-md-auto">
 
             <div class="row">
-              <div class=" likes col-md-6 col-6 text-center">
-                <img id="likeimg"  src="../../../img/like.png"><br>
-                <b>{{user.likes}}</b><br>
+              <div class=" likes col-md-12 col-6 text-center align-self-md-center">
+                <!--<img id="likeimg"  src="../../../img/like.png"><br>-->
+                <!--<b>{{user.likes}}</b><br>-->
                 <button id="writebtn" @click="writemsg">Написать</button>
               </div>
 
-              <div class=" likes col-md-6 col-6 text-center">
-                <img id="dislikeimg" src="../../../img/dislike.png"><br>
-                <b>{{user.dislikes}}</b><br>
+              <div class=" likes col-md-12 col-6 text-center align-self-md-center">
+                <!--<img id="dislikeimg" src="../../../img/dislike.png"><br>-->
+                <!--<b>{{user.dislikes}}</b><br>-->
                 <button id="exitbtn" @click="exit">Выход</button>
               </div>
             </div>
