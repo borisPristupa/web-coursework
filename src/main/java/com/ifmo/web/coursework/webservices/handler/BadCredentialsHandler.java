@@ -13,7 +13,7 @@ public class BadCredentialsHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) {
         try {
-            httpServletRequest.getRequestDispatcher("/loginerr?msg=" + e.getMessage())
+            httpServletRequest.getRequestDispatcher("/sign/err?msg=" + e.getMessage())
                     .forward(httpServletRequest, httpServletResponse);
         } catch (IOException | ServletException ex) {
             ex.printStackTrace();

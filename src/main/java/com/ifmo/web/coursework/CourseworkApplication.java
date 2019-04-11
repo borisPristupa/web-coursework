@@ -1,8 +1,8 @@
 package com.ifmo.web.coursework;
 
-import com.ifmo.web.coursework.entity.Human;
-import com.ifmo.web.coursework.repository.ArtifactRepository;
-import com.ifmo.web.coursework.repository.HumanRepository;
+import com.ifmo.web.coursework.data.entity.Human;
+import com.ifmo.web.coursework.data.repository.ArtifactRepository;
+import com.ifmo.web.coursework.data.repository.HumanRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;

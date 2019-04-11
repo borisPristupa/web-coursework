@@ -1,17 +1,18 @@
 package com.ifmo.web.coursework.security;
 
-import com.ifmo.web.coursework.entity.Human;
-import com.ifmo.web.coursework.repository.HumanRepository;
+import com.ifmo.web.coursework.data.entity.Human;
+import com.ifmo.web.coursework.data.repository.HumanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Component
@@ -22,19 +23,27 @@ public class Authenticator implements AuthenticationManager {
     @Override
     public Authentication authenticate(Authentication authentication) throws BadCredentialsException {
         if (null == authentication.getName() || null == authentication.getCredentials()) {
-            throw new BadCredentialsException("No login or password provided!");
+            throw new BadCredentialsException("No username or password provided!");
         }
         Optional<Human> byLogin = humanRepository.findByLogin(authentication.getName());
-        Human human = byLogin.orElseThrow(() -> new BadCredentialsException("Wrong login"));
+        Human human = byLogin.orElseThrow(() -> new BadCredentialsException("Wrong username"));
 
         if (!encoder.matches(authentication.getCredentials().toString(), human.getPassword())) {
-            throw new BadCredentialsException("Wrong login/password");
+            throw new BadCredentialsException("Wrong username/password");
         }
+
+        ArrayList<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER_" + human.getHumanId()));
+
+        if (human.getModerator()) authorities.add(new SimpleGrantedAuthority("ROLE_MODERATOR"));
+        if (human.getArchaeologist()) authorities.add(new SimpleGrantedAuthority("ROLE_ARCHAEOLOGIST"));
+        if (human.getResearcher()) authorities.add(new SimpleGrantedAuthority("ROLE_RESEARCHER"));
+        if (human.getCollector()) authorities.add(new SimpleGrantedAuthority("ROLE_COLLECTOR"));
+        if (human.getSponsor()) authorities.add(new SimpleGrantedAuthority("ROLE_SPONSOR"));
 
         return new UsernamePasswordAuthenticationToken(authentication.getName(),
                 authentication.getCredentials(),
-                Arrays.asList(new SimpleGrantedAuthority("ROLE_BORIS"),
-                        new SimpleGrantedAuthority("ROLE_USER"))); // FIXME: 05.04.19
+                authorities);
     }
 
     @Autowired

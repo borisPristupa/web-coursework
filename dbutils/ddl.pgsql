@@ -14,15 +14,20 @@ CREATE TABLE IF NOT EXISTS human (
 	human_id serial PRIMARY KEY,
 	login varchar(255) NOT NULL UNIQUE CHECK (login != ''),
 	password text NOT NULL CHECK (password != ''), -- md5
-	email text NOT NULL UNIQUE CHECK (email ~* '^([a-z0-9]\.?)*[a-z0-9]+@([a-z0-9]\.?)+[a-z0-9]$'),
+	email text NOT NULL UNIQUE CHECK (email ~* '^[^@]+@([^@]\.?)+[^@]$'),
 	vk_id text UNIQUE,
 	tg_nickname text UNIQUE,
 	first_name varchar(50) NOT NULL CHECK (first_name != ''),
 	second_name varchar(50) NOT NULL CHECK (second_name != ''),
-	last_name varchar(50) NOT NULL DEFAULT '',
+	last_name varchar(50) DEFAULT '',
 	bio text NOT NULL DEFAULT '',
 	likes int NOT NULL DEFAULT 0 CHECK (likes >= 0),
 	dislikes int NOT NULL DEFAULT 0 CHECK (dislikes >= 0),
+	archaeologist boolean NOT NULL DEFAULT FALSE,
+	researcher boolean NOT NULL DEFAULT FALSE,
+	collector boolean NOT NULL DEFAULT FALSE,
+	sponsor boolean NOT NULL DEFAULT FALSE,
+	moderator boolean NOT NULL DEFAULT FALSE,
 	avatar_small bytea,
 	avatar_full bytea,
 	banned boolean NOT NULL DEFAULT FALSE,
@@ -43,28 +48,6 @@ CREATE TABLE IF NOT EXISTS message (
 	body text NOT NULL CHECK (trim(body) != ''),
 	_date timestamp NOT NULL,
 	UNIQUE(chat_id, message_id)
-);
-
--- РОЛИ humanОВ
-CREATE TABLE IF NOT EXISTS archaeologist (
-	human_id int PRIMARY KEY REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS collector (
-	human_id int PRIMARY KEY REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS moderator (
-	human_id int PRIMARY KEY REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE,
-	tg_nickname text NOT NULL UNIQUE CHECK (tg_nickname != '')
-);
-
-CREATE TABLE IF NOT EXISTS researcher (
-	human_id int PRIMARY KEY REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS sponsor (
-	human_id int PRIMARY KEY REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- artifactЫ + auctionЫ
@@ -96,7 +79,7 @@ CREATE TABLE IF NOT EXISTS artifact (
 
 CREATE TABLE IF NOT EXISTS auction (
 	auction_id serial PRIMARY KEY,
-	artifact_id int NOT NULL REFERENCES artifact ON UPDATE CASCADE ON DELETE CASCADE,
+	artifact_id int NOT NULL UNIQUE REFERENCES artifact ON UPDATE CASCADE ON DELETE CASCADE,
 	price_old numeric,
 	price_new numeric NOT NULL CHECK (price_old < price_new),
 	raiser int REFERENCES human ON UPDATE CASCADE ON DELETE CASCADE,

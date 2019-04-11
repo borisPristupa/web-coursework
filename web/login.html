@@ -1,34 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<title>WOW</title>
-	<meta charset="utf-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <title>Login</title>
+    <meta charset="utf-8">
 </head>
 <body>
-<label for="username">Login:</label><input id="username" name="username" type="text"><br>
+<label for="username">Login:</label><input id="username" type="text"><br>
 
-<label for="password">Password</label><input id="password" name="password" type="password"><br>
+<label for="password">Password</label><input id="password" type="password"><br>
 
-	<button onclick="auth()">Try to login</button>
-<span id="message"></span>
+<label for="vk_id">VK id</label><input id="vk_id" type="password"><br>
+
+<button onclick="auth()">Try to login</button>
+<span id="message"></span><br>
+
+<button onclick="logout()">Log out</button>
+<br>
+
+<a href="register.html">Go to registration page</a>
+
+<br><br><br><br>
+
+<button onclick="tryFind()">Try business logic</button>
+
+<br><br><br><br>
+
+<button onclick="tryEdit()">Try sume put</button>
+
 
 <script type="text/javascript">
-	function auth() {
-		$.post({
-		  url: "http://localhost:8080/login",
-		  data: {
-		  	username: document.getElementById("username").value,
-		  	password: document.getElementById("password").value
-		  },
-		  "success": function(msg) {
-		  	document.getElementById("message").innerHTML = JSON.stringify(msg);
-		  },
-		  "error": function(msg) {
-		  	document.getElementById("message").innerHTML = msg.responseText;
-		  }
-		});
-	}
+    function tryEdit() {
+        $.ajax({
+            url: "http://localhost:8080/human/edit",
+            xhrFields: {withCredentials: true},
+            type: 'PUT',
+            "success": (msg) => {
+                document.getElementById("message").innerHTML = "Edited: " + JSON.stringify(msg);
+            },
+            "error": (msg) => {
+                document.getElementById("message").innerHTML = "Not edited: " + JSON.stringify(msg);
+            }
+        });
+    }
+
+    function tryFind() {
+        $.get({
+            url: "http://localhost:8080/human/get",
+            xhrFields: {withCredentials: true},
+            "success": function (msg) {
+                document.getElementById("message").innerHTML = "Found: " + JSON.stringify(msg);
+            },
+            "error": function (msg) {
+                document.getElementById("message").innerHTML = "Not found: " + JSON.stringify(msg);
+            }
+        });
+    }
+
+    function nullValidById(id) {
+        let value = document.getElementById(id).value;
+        return value === '' ? null : value;
+    }
+
+    function auth() {
+        let data = {};
+        let username = nullValidById("username");
+        let password = nullValidById("password");
+        let vk_id = nullValidById("vk_id");
+
+        if (vk_id !== null) {
+            data = {vk_id};
+            username = password = vk_id;
+        }
+
+        data.username = username;
+        data.password = password;
+
+        $.post({
+            url: "http://localhost:8080/sign/in",
+            xhrFields: {withCredentials: true},
+            data: data,
+            "success": function (msg) {
+                document.getElementById("message").innerHTML = JSON.stringify(msg);
+            },
+            "error": function (msg) {
+                document.getElementById("message").innerHTML = msg.responseText;
+            }
+        });
+    }
+
+    function logout() {
+        $.post({
+            url: "http://localhost:8080/sign/out",
+            xhrFields: {withCredentials: true},
+            "success": function (msg) {
+                document.getElementById("message").innerHTML = "You have been successfully logged out: " + JSON.stringify(msg);
+            },
+            "error": function (msg) {
+                document.getElementById("message").innerHTML = "Wow! Error while logging out: " + JSON.stringify(msg);
+            }
+        });
+    }
 </script>
 </body>
 </html>

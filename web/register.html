@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <title>Register</title>
+</head>
+<body>
+<label for="username">Login:</label><input id="username" type="text"><br>
+<label for="first_name">Имя*:</label><input id="first_name" type="text"><br>
+<label for="second_name">Фамилия*:</label><input id="second_name" type="text"><br>
+<label for="last_name">Отчество:</label><input id="last_name" type="text"><br>
+<label for="email">Email*:</label><input id="email" type="text"><br>
+<label for="password">Password</label><input id="password" type="password"><br>
+<label for="password_repeat">Repeat password:</label><input id="password_repeat" type="password"
+                                                            onkeyup="checkPassword()"><br>
+<label for="vk_id">VK id:</label><input id="vk_id" type="text"><br>
+
+
+<button onclick="reg()">Try to login</button>
+<span id="message"></span><br>
+
+<a href="login.html">Go to login page</a>
+
+<br><br><br><br>
+
+<label for="id">Id:</label><input id="id" type="text"><br>
+<button onclick="edit()">Try to edit</button>
+
+<script type="text/javascript">
+    function edit() {
+        let username = nullValidById("username");
+        let first_name = nullValidById("first_name");
+        let second_name = nullValidById("second_name");
+        let last_name = nullValidById("last_name");
+        let email = nullValidById("email");
+        let password = nullValidById("password");
+        $.ajax({
+            url: "http://localhost:8080/human/edit",
+            type: "PUT",
+            xhrFields: {withCredentials: true},
+            data: {
+                username,
+                first_name,
+                second_name,
+                last_name,
+                email,
+                password,
+                id: nullValidById("id")
+            },
+            "success": function (msg) {
+                msgSpan.innerHTML = JSON.stringify(msg);
+            },
+            "error": function (msg) {
+                msgSpan.innerHTML = msg.responseText;
+            }
+        });
+    }
+
+    function nullValidById(id) {
+        let value = document.getElementById(id).value;
+        return value === '' ? null : value;
+    }
+
+    let msgSpan = document.getElementById("message");
+
+    function reg() {
+        let data = {};
+        let username = nullValidById("username");
+        let first_name = nullValidById("first_name");
+        let second_name = nullValidById("second_name");
+        let last_name = nullValidById("last_name");
+        let email = nullValidById("email");
+        let password = nullValidById("password");
+        let vk_id = nullValidById("vk_id");
+
+        if (vk_id !== null) {
+            data.vk_id = vk_id;
+            username = password = vk_id;
+        }
+
+        if (username === null) password = username = email;
+
+        if (last_name !== null) data.last_name = last_name;
+
+        data = {
+            ...data,
+            username,
+            first_name,
+            second_name,
+            email,
+            password
+        };
+
+        $.ajax({
+            url: "http://localhost:8080/sign/up",
+            type: "PUT",
+            xhrFields: {withCredentials: true},
+            data: data,
+            "success": function (msg) {
+                msgSpan.innerHTML = JSON.stringify(msg);
+                document.getElementById("username").value = msg.username;
+                document.getElementById("first_name").value = msg.first_name;
+                document.getElementById("second_name").value = msg.second_name;
+                document.getElementById("last_name").value = msg.last_name;
+                document.getElementById("email").value = msg.email;
+                document.getElementById("id").value = msg.id;
+
+                $.post({
+                    url: "http://localhost:8080/sign/in",
+                    xhrFields: {withCredentials: true},
+                    data: data,
+                    "success": function (msg) {
+                        document.getElementById("message").innerHTML = JSON.stringify(msg);
+                    },
+                    "error": function (msg) {
+                        document.getElementById("message").innerHTML = msg.responseText;
+                    }
+                });
+            },
+            "error": function (msg) {
+                msgSpan.innerHTML = msg.responseText;
+            }
+        });
+    }
+
+    function checkPassword() {
+        if (document.getElementById("password").value === document.getElementById("password_repeat").value) {
+            msgSpan.innerHTML = "";
+        } else {
+            msgSpan.innerHTML = "Passwords do not match!";
+        }
+    }
+</script>
+</body>
+</html>

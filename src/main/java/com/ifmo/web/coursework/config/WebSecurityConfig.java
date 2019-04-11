@@ -1,9 +1,9 @@
 package com.ifmo.web.coursework.config;
 
 import com.ifmo.web.coursework.webservices.handler.BadCredentialsHandler;
+import com.ifmo.web.coursework.webservices.handler.PermissionDeniedHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -18,19 +18,27 @@ import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .cors()
-                .and().authorizeRequests()
-                .anyRequest().authenticated()
+                .and()
+                .authorizeRequests()
+                    .antMatchers("/sign/**", "/forbidden").permitAll()
+                    .antMatchers("/artifact/privileged/approve").hasRole("RESEARCHER")
+                    .antMatchers("/human/privileged", "/artifact/privileged/**").hasRole("MODERATOR")
+                    .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .loginPage("/login").permitAll()
-                .successForwardUrl("/loginok")
-                .failureHandler(new BadCredentialsHandler());
+                    .loginPage("/sign/in")
+                    .successForwardUrl("/sign/in/success")
+                    .failureHandler(new BadCredentialsHandler())
+                .and().logout()
+                    .logoutUrl("/sign/out")
+                    .logoutSuccessUrl("/sign/out/success");
+        http.exceptionHandling().authenticationEntryPoint(new PermissionDeniedHandler());
+        http.exceptionHandling().accessDeniedHandler(new PermissionDeniedHandler());
     }
 
     @Bean
@@ -39,6 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8081"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"));
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
