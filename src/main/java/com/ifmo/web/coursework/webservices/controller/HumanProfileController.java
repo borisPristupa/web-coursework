@@ -70,7 +70,7 @@ public class HumanProfileController {
                 if (!edited.getHumanId().equals(human.getHumanId()))
                     throw new AlreadyExistsException("Telegram nickname " + newProfile.getTg_nickname() + " is already registered");
             });
-            edited.setEmail(newProfile.getTg_nickname());
+            edited.setTgNickname(newProfile.getTg_nickname());
         }
 
         // Non-unique data:
@@ -99,11 +99,10 @@ public class HumanProfileController {
             edited.setBanned(newProfile.getBanned());
 
         if (null != newProfile.getCountry())
-            edited.setCountryId(
+            edited.setCountryByCountryId(
                     countryRepository.findByName(newProfile.getCountry())
                             .orElseThrow(() ->
-                                    new NotFoundException("Not found coutry by name " + newProfile.getCountry()))
-                            .getCountryId());
+                                    new NotFoundException("Not found country by name " + newProfile.getCountry())));
 
         // Roles:
 
