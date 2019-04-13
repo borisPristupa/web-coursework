@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface ArtifactRepository extends JpaRepository<Artifact, Integer> {
 
-    Optional<Artifact> findFirstByOrderByArtifactIdDesc();
+    Optional<Artifact> findFirstByBannedIsFalseOrderByArtifactIdDesc();
 
     Optional<Artifact> findByNameAndAgeByAgeId_DescriptionAndCategoryByCategoryId_Name(String name, String age, String type);
 

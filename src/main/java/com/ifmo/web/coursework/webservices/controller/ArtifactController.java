@@ -85,7 +85,7 @@ public class ArtifactController {
         return ArtifactResponse.fromArtifact(
                 artifactRepository.findOne(Example.of(created))
                         .orElseGet(() ->
-                                artifactRepository.findFirstByOrderByArtifactIdDesc()
+                                artifactRepository.findFirstByBannedIsFalseOrderByArtifactIdDesc()
                                         .orElseThrow(() ->
                                                 new IllegalStateException("Could not save a new artifact '" +
                                                         created.getName() + "'"))

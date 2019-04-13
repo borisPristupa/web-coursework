@@ -15,7 +15,7 @@ public interface ExpeditionRepository extends JpaRepository<Expedition,Integer> 
     List<Expedition> findAllByStageId(Integer stage_id);
     List<Expedition> findAllByBanned(Boolean banned);
 
-    List<Expedition> findAllByCostsBetween(Integer min, Integer max, Pageable pageable);
+    List<Expedition> findAllByCostsBetweenAndBannedIsFalse(Integer min, Integer max, Pageable pageable);
 
     Optional<Expedition> findFirstByOrderByExpeditionIdDesc();
 
