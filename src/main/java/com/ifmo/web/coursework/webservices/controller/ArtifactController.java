@@ -12,8 +12,12 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -158,7 +162,7 @@ public class ArtifactController {
                 .collect(Collectors.toList());
     }
 
-        @PatchMapping("/subscribe")
+    @PatchMapping("/subscribe")
     @ResponseStatus(HttpStatus.OK)
     public SuccessResponse subscribe(@RequestParam("auction_id") Integer auctionId,
                                      @RequestParam(value = "subscribed", required = false, defaultValue = "true") Boolean subscribed) {
@@ -190,6 +194,27 @@ public class ArtifactController {
         }
     }
 
+    @PutMapping("/bet")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ArtifactResponse bet(@RequestParam("auction_id") Integer auctionId,
+                                @RequestParam("value") Integer value) {
+        Auction auction = auctionRepository.findById(auctionId).orElseThrow(() ->
+                new NotFoundException("Auction not found by id '" + auctionId + "'"));
+
+        if (auction.getPriceNew() >= value)
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "New bet is not greater than the old");
+
+        auction.setPriceOld(auction.getPriceNew());
+        auction.setPriceNew(value);
+        auction.setBetTime(Timestamp.valueOf(LocalDateTime.now()));
+        auction.setHumanByRaiser(humanUtils.getCurrentHuman());
+
+        auctionRepository.save(auction);
+
+        auction.getArtifactByArtifactId().setAuctionByArtifactId(auction);
+
+        return ArtifactResponse.fromArtifact(auction.getArtifactByArtifactId());
+    }
 
     @Autowired
     public ArtifactController(ArtifactRepository artifactRepository, AuctionRepository auctionRepository, SubscriptionAuctionRepository subscriptionRepository, CategoryRepository categoryRepository, AgeRepository ageRepository, CountryRepository countryRepository, HumanUtils humanUtils) {
