@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DonationResponse {
-    private Integer id;
     private Integer expedition_id;
     private HumanResponse donator;
     private Integer amount;
@@ -20,7 +19,6 @@ public class DonationResponse {
         if (null == donation) return null;
 
         return builder()
-                .id(donation.getDonationId())
                 .expedition_id(donation.getExpeditionId())
                 .donator(HumanResponse.fromHuman(donation.getHumanByDonator()))
                 .amount(donation.getAmount())
