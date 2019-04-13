@@ -21,9 +21,6 @@ public class CourseworkApplicationTests {
 
     @Test
     public void contextLoads() {
-        humanRepository.findAll().stream()
-              .peek(human -> human.setPassword(encoder.encode(human.getPassword())))
-              .forEach(humanRepository::save);
     }
 
 }
