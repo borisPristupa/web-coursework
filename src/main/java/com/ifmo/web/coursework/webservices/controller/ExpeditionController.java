@@ -5,6 +5,7 @@ import com.ifmo.web.coursework.data.repository.*;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
 import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
 import com.ifmo.web.coursework.webservices.exception.NotFoundException;
+import com.ifmo.web.coursework.webservices.response.DonationResponse;
 import com.ifmo.web.coursework.webservices.response.ExpeditionResponse;
 import com.ifmo.web.coursework.webservices.response.SuccessResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -218,6 +217,30 @@ public class ExpeditionController {
         }
 
         return ExpeditionResponse.fromExpedition(expedition);
+    }
+
+    @GetMapping("/donations")
+    @ResponseStatus(HttpStatus.OK)
+    public List<DonationResponse> getDonations(@RequestParam("expedition_id") Integer expeditionId) {
+        List<DonationResponse> collect = expeditionRepository.findById(expeditionId).orElseThrow(() ->
+                new NotFoundException("Expedition not found by id '" + expeditionId + "'"))
+                .getDonationsByExpeditionId()
+                .stream()
+                .map(DonationResponse::fromDonation)
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(dr -> dr.getDonator().getId())).collect(Collectors.toList());
+
+        int prevId = -1;
+        LinkedList<DonationResponse> result = new LinkedList<>();
+        for (DonationResponse donationResponse : collect)
+            if (donationResponse.getDonator().getId() != prevId) {
+                prevId = donationResponse.getDonator().getId();
+                result.addLast(donationResponse);
+            } else {
+                result.getLast().setAmount(result.getLast().getAmount() + donationResponse.getAmount());
+            }
+
+        return result;
     }
 
     @Autowired
