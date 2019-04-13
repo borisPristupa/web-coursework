@@ -51,12 +51,12 @@
 
     function tryFind() {
         $.ajax({
-            url: "http://localhost:8080/artifact/bet",
-            type: 'PUT',
+            url: "http://localhost:8080/artifact",
+            type: 'PATCH',
             xhrFields: {withCredentials: true},
             data: {
-                auction_id: 2,
-                value: 701
+                id: 2,
+                type: 'чел ост'
             },
             "success": function (msg) {
                 document.getElementById("message").innerHTML = "Found: " + JSON.stringify(msg);

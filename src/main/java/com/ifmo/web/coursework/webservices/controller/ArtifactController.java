@@ -96,6 +96,39 @@ public class ArtifactController {
                         ));
     }
 
+    @PatchMapping
+    @ResponseStatus(HttpStatus.OK)
+    public ArtifactResponse edit(ArtifactResponse artifactResponse) {
+        if (null == artifactResponse.getId()) throw new MissingRequiredArgumentException("id");
+
+        Artifact artifact = artifactRepository.findById(artifactResponse.getId()).orElseThrow(() ->
+                new NotFoundException("Artifact not found by id '" + artifactResponse.getId() + "'"));
+
+        if (null != artifactResponse.getName())
+            artifact.setName(artifactResponse.getName());
+
+        if (null != artifactResponse.getDescription())
+            artifact.setDescription(artifactResponse.getDescription());
+
+        if (null != artifactResponse.getCountry())
+            artifact.setCountryByCountryId(countryRepository.findByName(artifactResponse.getCountry())
+                    .orElseThrow(() ->
+                            new NotFoundException("Country not found: '" + artifactResponse.getCountry() + "'")));
+
+        if (null != artifactResponse.getAge())
+            artifact.setAgeByAgeId(ageRepository.findByDescription(artifactResponse.getAge())
+                    .orElseThrow(() ->
+                            new NotFoundException("Age not found: '" + artifactResponse.getAge() + "'")));
+
+        if (null != artifactResponse.getType())
+            artifact.setCategoryByCategoryId(categoryRepository.findByName(artifactResponse.getType())
+                    .orElseThrow(() ->
+                            new NotFoundException("Type of artifact not found: '" + artifactResponse.getType() + "'")));
+
+        artifactRepository.save(artifact);
+        return ArtifactResponse.fromArtifact(artifact);
+    }
+
     @PatchMapping("/privileged/ban")
     @ResponseStatus(HttpStatus.OK)
     public ArtifactResponse ban(@RequestParam("id") Integer id,
