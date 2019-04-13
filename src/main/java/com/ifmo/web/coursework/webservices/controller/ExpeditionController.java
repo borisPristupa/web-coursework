@@ -1,11 +1,7 @@
 package com.ifmo.web.coursework.webservices.controller;
 
-import com.ifmo.web.coursework.data.entity.Expedition;
-import com.ifmo.web.coursework.data.entity.SubscriptionExpedition;
-import com.ifmo.web.coursework.data.entity.SubscriptionExpeditionPK;
-import com.ifmo.web.coursework.data.repository.ExpeditionRepository;
-import com.ifmo.web.coursework.data.repository.ExpeditionStageRepository;
-import com.ifmo.web.coursework.data.repository.SubscriptionExpeditionRepository;
+import com.ifmo.web.coursework.data.entity.*;
+import com.ifmo.web.coursework.data.repository.*;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
 import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
 import com.ifmo.web.coursework.webservices.exception.NotFoundException;
@@ -17,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +26,8 @@ public class ExpeditionController {
     private final ExpeditionRepository expeditionRepository;
     private final ExpeditionStageRepository stageRepository;
     private final SubscriptionExpeditionRepository subscriptionRepository;
+    private final ParticipationExpeditionRepository participationRepository;
+    private final HumanRepository humanRepository;
     private final HumanUtils humanUtils;
 
     @GetMapping
@@ -149,11 +149,58 @@ public class ExpeditionController {
         return ExpeditionResponse.fromExpedition(expedition);
     }
 
+    @PatchMapping("/member")
+    @ResponseStatus(HttpStatus.OK)
+    public ExpeditionResponse addMember(@RequestParam("expedition_id") Integer expeditionId,
+                                        @RequestParam("human_id") Integer humanId,
+                                        @RequestParam("add") Boolean add) {
+        Expedition expedition = expeditionRepository.findById(expeditionId).orElseThrow(() ->
+                new NotFoundException("Expedition not found by id '" + expeditionId + "'"));
+
+
+        Human human = humanRepository.findById(humanId).orElseThrow(() ->
+                new NotFoundException("Human not found by id '" + humanId + "'"));
+
+        if (add && expedition.getParticipationExpeditionsByExpeditionId().stream()
+                .map(ParticipationExpedition::getHumanId)
+                .noneMatch(humanId::equals)) {
+            ParticipationExpedition pe = new ParticipationExpedition();
+            pe.setHumanByHumanId(human);
+            pe.setExpeditionByExpeditionId(expedition);
+            pe.setDate(Date.valueOf(LocalDate.now()));
+            participationRepository.save(pe);
+
+            pe = participationRepository.findOne(Example.of(pe)).orElseThrow(
+                    () -> new IllegalStateException("Failed to add member")
+            );
+
+            expedition.getParticipationExpeditionsByExpeditionId().add(pe);
+            expeditionRepository.save(expedition);
+
+            return ExpeditionResponse.fromExpedition(expedition);
+        } else if (!add && expedition.getParticipationExpeditionsByExpeditionId().stream()
+                .map(ParticipationExpedition::getHumanId)
+                .anyMatch(humanId::equals)) {
+            expedition.getParticipationExpeditionsByExpeditionId().stream()
+                    .filter(hid -> hid.getHumanId().equals(humanId))
+                    .forEach(participationExpedition -> {
+                        participationRepository.deleteById(participationExpedition.getParticipationExpeditionId());
+                        expedition.getParticipationExpeditionsByExpeditionId().remove(participationExpedition);
+                    });
+            return ExpeditionResponse.fromExpedition(expeditionRepository.findById(expeditionId).orElseThrow(() ->
+                    new IllegalStateException("Something went wrong while deleting member of an expedition")));
+        }
+
+        return ExpeditionResponse.fromExpedition(expedition);
+    }
+
     @Autowired
-    public ExpeditionController(ExpeditionRepository expeditionRepository, ExpeditionStageRepository stageRepository, SubscriptionExpeditionRepository subscriptionRepository, HumanUtils humanUtils) {
+    public ExpeditionController(ExpeditionRepository expeditionRepository, ExpeditionStageRepository stageRepository, SubscriptionExpeditionRepository subscriptionRepository, ParticipationExpeditionRepository participationRepository, HumanRepository humanRepository, HumanUtils humanUtils) {
         this.expeditionRepository = expeditionRepository;
         this.stageRepository = stageRepository;
         this.subscriptionRepository = subscriptionRepository;
+        this.participationRepository = participationRepository;
+        this.humanRepository = humanRepository;
         this.humanUtils = humanUtils;
     }
 }

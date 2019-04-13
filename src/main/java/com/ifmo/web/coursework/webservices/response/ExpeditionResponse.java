@@ -2,12 +2,15 @@ package com.ifmo.web.coursework.webservices.response;
 
 import com.ifmo.web.coursework.data.entity.Expedition;
 import com.ifmo.web.coursework.data.entity.ExpeditionStage;
+import com.ifmo.web.coursework.data.entity.ParticipationExpedition;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -20,6 +23,7 @@ public class ExpeditionResponse {
     private Integer full_sum, current_sum;
     private HumanResponse head;
     private String stage;
+    private List<HumanResponse> members;
 
     public static ExpeditionResponse fromExpedition(Expedition expedition) {
         if (null == expedition) return null;
@@ -35,6 +39,10 @@ public class ExpeditionResponse {
                 .stage(Optional.ofNullable(expedition.getExpeditionStageByStageId())
                         .map(ExpeditionStage::getName)
                         .orElse(null))
+                .members(expedition.getParticipationExpeditionsByExpeditionId().stream()
+                        .map(ParticipationExpedition::getHumanByHumanId)
+                        .map(HumanResponse::fromHuman)
+                        .collect(Collectors.toList()))
                 .build();
     }
 }
