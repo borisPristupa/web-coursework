@@ -25,7 +25,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors()
                 .and()
                 .authorizeRequests()
-                    .antMatchers("/sign/**", "/forbidden").permitAll()
+                    .antMatchers("/sign/**", "/forbidden", "/time").permitAll()
                     .antMatchers("/artifact/privileged/approve").hasRole("RESEARCHER")
                     .antMatchers("/human/privileged", "/artifact/privileged/**", "/expedition/privileged/ban")
                         .hasRole("MODERATOR")
