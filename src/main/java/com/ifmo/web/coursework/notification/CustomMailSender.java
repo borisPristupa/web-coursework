@@ -1,5 +1,6 @@
 package com.ifmo.web.coursework.notification;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -10,20 +11,21 @@ import org.springframework.stereotype.Component;
 @Component
 @PropertySource("classpath:mail.properties")
 public class CustomMailSender {
+    @Getter
     @Value("${spring.mail.username}")
-    String from;
+    private String defaultFrom;
 
     private final JavaMailSender sender;
 
-    public void sendMail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
+    public void sendMail(Message message) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
 
-        message.setFrom(from);
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
+        mailMessage.setFrom(message.getFrom());
+        mailMessage.setTo(message.getTo());
+        mailMessage.setSubject(message.getSubject());
+        mailMessage.setText(message.getText());
 
-        sender.send(message);
+        sender.send(mailMessage);
     }
 
     @Autowired
