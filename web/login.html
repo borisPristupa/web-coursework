@@ -32,13 +32,15 @@
 <script type="text/javascript">
     function tryEdit() {
         $.ajax({
-            url: "http://localhost:8080/artifact/search",
+            url: "http://localhost:8080/expedition/search",
             xhrFields: {withCredentials: true},
             type: 'GET',
             data: {
-                "types[]": '',
-                "ages[]": '',
-                country: "Россия"
+                "stages[]": ['3/4'],
+                members_min: 0,
+                members_max: 100,
+                full_sum_min: 0,
+                full_sum_max: 1000000
             },
             "success": (msg) => {
                 document.getElementById("message").innerHTML = "Edited: " + JSON.stringify(msg);
@@ -51,12 +53,12 @@
 
     function tryFind() {
         $.ajax({
-            url: "http://localhost:8080/artifact",
+            url: "http://localhost:8080/expedition",
             type: 'PATCH',
             xhrFields: {withCredentials: true},
             data: {
-                id: 2,
-                type: 'чел ост'
+                id: 1,
+                stage: '2/4'
             },
             "success": function (msg) {
                 document.getElementById("message").innerHTML = "Found: " + JSON.stringify(msg);

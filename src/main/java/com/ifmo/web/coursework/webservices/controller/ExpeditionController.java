@@ -75,6 +75,32 @@ public class ExpeditionController {
         );
     }
 
+    @PatchMapping
+    @ResponseStatus(HttpStatus.OK)
+    public ExpeditionResponse edit(ExpeditionResponse expeditionResponse) {
+        if (null == expeditionResponse.getId()) throw new MissingRequiredArgumentException("id");
+
+        Expedition expedition = expeditionRepository.findById(expeditionResponse.getId()).orElseThrow(() ->
+                new NotFoundException("Expedition not found by id '" + expeditionResponse.getId() + "'"));
+
+        if (null != expeditionResponse.getName())
+            expedition.setName(expeditionResponse.getName());
+
+        if (null != expeditionResponse.getDescription())
+            expedition.setDescription(expeditionResponse.getDescription());
+
+        if (null != expeditionResponse.getStage())
+            expedition.setExpeditionStageByStageId(stageRepository.findByName(expeditionResponse.getStage())
+                    .orElseThrow(() ->
+                            new NotFoundException("Stage of expedition not found: '" + expeditionResponse.getStage() + "'")));
+
+        if (null != expeditionResponse.getFull_sum())
+            expedition.setCosts(expeditionResponse.getCurrent_sum());
+
+        expeditionRepository.save(expedition);
+        return ExpeditionResponse.fromExpedition(expedition);
+    }
+
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
     public List<ExpeditionResponse> search(@RequestParam(value = "amount", required = false, defaultValue = "20") int amount,
