@@ -1,7 +1,6 @@
 package com.ifmo.web.coursework;
 
 import com.ifmo.web.coursework.data.entity.Human;
-import com.ifmo.web.coursework.data.repository.ArtifactRepository;
 import com.ifmo.web.coursework.data.repository.HumanRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +23,15 @@ public class CourseworkApplication {
     private static Logger log = LoggerFactory.getLogger(CourseworkApplication.class);
 
     @Bean
-    public CommandLineRunner demo(HumanRepository humanRepository, ArtifactRepository ar) {
+    public CommandLineRunner demo(HumanRepository humanRepository, PasswordEncoder encoder) {
         return args -> {
+            if (args.length > 0 && "encode".equals(args[0])) {
+                humanRepository.findAll().stream()
+                        .peek(human -> human.setPassword(encoder.encode(human.getPassword())))
+                        .forEach(humanRepository::save);
+                log.info("All passwords encoded successfully!");
+            }
+
             for (Human human : humanRepository.findAll()) {
                 log.info(human.getHumanId().toString());
             }
