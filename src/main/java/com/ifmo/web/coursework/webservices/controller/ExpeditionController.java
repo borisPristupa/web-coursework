@@ -23,8 +23,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/expedition") // TODO: 10.04.19 TEST
-// TODO: 10.04.19 GET STAGES
+@RequestMapping("/expedition")
 public class ExpeditionController {
     private final ExpeditionRepository expeditionRepository;
     private final ExpeditionStageRepository stageRepository;
@@ -85,7 +84,7 @@ public class ExpeditionController {
                                            @RequestParam("members_min") Integer membersMin,
                                            @RequestParam("full_sum_max") Integer fullSumMax,
                                            @RequestParam("full_sum_min") Integer fullSumMin) {
-        return expeditionRepository.findAllByCostsBetween(fullSumMin, fullSumMax, PageRequest.of(page, amount)).stream()
+        return expeditionRepository.findAllByCostsBetweenAndBannedIsFalse(fullSumMin, fullSumMax, PageRequest.of(page, amount)).stream()
                 .filter(expedition -> expedition.getParticipationExpeditionsByExpeditionId().size() >= membersMin)
                 .filter(expedition -> expedition.getParticipationExpeditionsByExpeditionId().size() <= membersMax)
                 .map(ExpeditionResponse::fromExpedition)
@@ -136,6 +135,19 @@ public class ExpeditionController {
         }
     }
 
+
+    @PostMapping("/donate")
+    @ResponseStatus(HttpStatus.OK)
+    public ExpeditionResponse donate(@RequestParam("expedition_id") Integer expeditionId,
+                                     @RequestParam("value") Integer value) {
+        Expedition expedition = expeditionRepository.findById(expeditionId).orElseThrow(() ->
+                new NotFoundException("Expedition not found by id '" + expeditionId + "'"));
+
+        expedition.setCurrentSum(expedition.getCurrentSum() + value);
+        expeditionRepository.save(expedition);
+
+        return ExpeditionResponse.fromExpedition(expedition);
+    }
 
     @Autowired
     public ExpeditionController(ExpeditionRepository expeditionRepository, ExpeditionStageRepository stageRepository, SubscriptionExpeditionRepository subscriptionRepository, HumanUtils humanUtils) {

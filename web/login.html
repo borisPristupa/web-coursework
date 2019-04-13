@@ -32,9 +32,16 @@
 <script type="text/javascript">
     function tryEdit() {
         $.ajax({
-            url: "http://localhost:8080/human/edit",
+            url: "http://localhost:8080/expedition/search",
             xhrFields: {withCredentials: true},
-            type: 'PUT',
+            type: 'GET',
+            data: {
+                "stages[]": ['начало', 'конец', '2/4'],
+                members_min: 1,
+                members_max: 100,
+                full_sum_min: 0,
+                full_sum_max: 10000000
+            },
             "success": (msg) => {
                 document.getElementById("message").innerHTML = "Edited: " + JSON.stringify(msg);
             },
@@ -45,9 +52,13 @@
     }
 
     function tryFind() {
-        $.get({
-            url: "http://localhost:8080/human/get",
+        $.post({
+            url: "http://localhost:8080/expedition/donate",
             xhrFields: {withCredentials: true},
+            data: {
+                expedition_id: 1,
+                value: 5
+            },
             "success": function (msg) {
                 document.getElementById("message").innerHTML = "Found: " + JSON.stringify(msg);
             },
