@@ -12,6 +12,7 @@ public class FilterUtils {
         return o ->
                 pattern.trim().isEmpty() ||
                         Arrays.stream(nameResolvers).anyMatch(
-                                resolver -> Arrays.asList(pattern.trim().split(" ")).contains(resolver.apply(o)));
+                                resolver -> Arrays.stream(pattern.trim().split(" "))
+                                        .anyMatch(resolver.apply(o)::startsWith));
     }
 }
