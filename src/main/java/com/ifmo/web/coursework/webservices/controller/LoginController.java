@@ -3,16 +3,22 @@ package com.ifmo.web.coursework.webservices.controller;
 import com.ifmo.web.coursework.data.entity.Human;
 import com.ifmo.web.coursework.data.repository.HumanRepository;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
+import com.ifmo.web.coursework.log.Log;
+import com.ifmo.web.coursework.notification.Message;
+import com.ifmo.web.coursework.notification.jms.CustomJMSSender;
 import com.ifmo.web.coursework.webservices.exception.AlreadyExistsException;
 import com.ifmo.web.coursework.webservices.response.ErrorResponse;
 import com.ifmo.web.coursework.webservices.response.HumanResponse;
 import com.ifmo.web.coursework.webservices.response.SuccessResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+@Log
 @RestController
 @RequestMapping("/sign")
 public class LoginController {
@@ -20,12 +26,15 @@ public class LoginController {
     private final HumanUtils humanUtils;
     private final PasswordEncoder encoder;
 
+    private final CustomJMSSender jms;
+
     @PostMapping("/in/success")
     @ResponseStatus(HttpStatus.OK)
     public HumanResponse signIn() {
         return HumanResponse.fromHuman(humanUtils.getCurrentHuman());
     }
 
+    @com.ifmo.web.coursework.log.Log.Exclude
     @PostMapping("/up")
     @ResponseStatus(HttpStatus.CREATED)
     public HumanResponse signUp(@RequestParam("username") String username,
@@ -52,6 +61,14 @@ public class LoginController {
 
         humanRepository.save(human);
 
+        jms.send(CustomJMSSender.MAIL, Message.builder()
+                .to(email)
+                .subject("Your profile")
+                .text("Hello, " + firstName + "! \n" +
+                        "You have successfully created an account at Archaeology! Welcome!")
+                .build());
+
+        logger.info("User '" + username + "' signed up!");
         return HumanResponse.fromHuman(human);
     }
 
@@ -68,9 +85,12 @@ public class LoginController {
     }
 
     @Autowired
-    public LoginController(HumanRepository humanRepository, HumanUtils humanUtils, PasswordEncoder encoder) {
+    public LoginController(HumanRepository humanRepository, HumanUtils humanUtils, PasswordEncoder encoder, CustomJMSSender jms) {
         this.humanRepository = humanRepository;
         this.humanUtils = humanUtils;
         this.encoder = encoder;
+        this.jms = jms;
     }
+
+    private static Logger logger = LoggerFactory.getLogger(LoginController.class);
 }

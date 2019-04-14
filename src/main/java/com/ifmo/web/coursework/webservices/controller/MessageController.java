@@ -1,9 +1,15 @@
 package com.ifmo.web.coursework.webservices.controller;
 
+import com.ifmo.web.coursework.data.entity.Chat;
+import com.ifmo.web.coursework.data.entity.Human;
 import com.ifmo.web.coursework.data.entity.Message;
+import com.ifmo.web.coursework.data.repository.ChatRepository;
 import com.ifmo.web.coursework.data.repository.MessageRepository;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
+import com.ifmo.web.coursework.log.Log;
+import com.ifmo.web.coursework.notification.jms.CustomJMSSender;
 import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
+import com.ifmo.web.coursework.webservices.exception.NotFoundException;
 import com.ifmo.web.coursework.webservices.response.HumanResponse;
 import com.ifmo.web.coursework.webservices.response.MessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +28,9 @@ import java.util.stream.Collectors;
 public class MessageController {
     private final MessageRepository messageRepository;
     private final HumanUtils humanUtils;
+    private final ChatRepository chatRepository;
+
+    private final CustomJMSSender jms;
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
@@ -33,6 +42,7 @@ public class MessageController {
                 .collect(Collectors.toList());
     }
 
+    @Log
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public MessageResponse addMessage(MessageResponse messageResponse) {
@@ -47,6 +57,9 @@ public class MessageController {
         if (!missing.isEmpty())
             throw new MissingRequiredArgumentException(missing.toArray(new String[0]));
 
+        Chat chat = chatRepository.findById(messageResponse.getChat_id()).orElseThrow(() ->
+                new NotFoundException("Chat not found by id '" + messageResponse.getChat_id() + "'"));
+
         messageResponse.setDate(Timestamp.valueOf(LocalDateTime.now()));
         messageResponse.setSender(HumanResponse.fromHuman(humanUtils.getCurrentHuman()));
 
@@ -57,12 +70,27 @@ public class MessageController {
         message.setDate(messageResponse.getDate());
         messageRepository.save(message);
 
+        chat.getMembers().stream()
+                .filter(human -> !human.getHumanId().equals(message.getHumanId()))
+                .map(Human::getEmail)
+                .forEach(email -> jms.send(CustomJMSSender.MAIL,
+                        com.ifmo.web.coursework.notification.Message.builder()
+                                .to(email)
+                                .subject("Chat " + chat.getName())
+                                .text("%s sent a message at chat '%s'! \n" +
+                                        "Don't miss important news about archaeology\n" +
+                                        "Why not?\n" +
+                                        "Just don't")
+                                .build()));
+
         return messageResponse;
     }
 
     @Autowired
-    public MessageController(MessageRepository messageRepository, HumanUtils humanUtils) {
+    public MessageController(MessageRepository messageRepository, HumanUtils humanUtils, ChatRepository chatRepository, CustomJMSSender jms) {
         this.messageRepository = messageRepository;
         this.humanUtils = humanUtils;
+        this.chatRepository = chatRepository;
+        this.jms = jms;
     }
 }

@@ -5,6 +5,9 @@ import com.ifmo.web.coursework.data.repository.CountryRepository;
 import com.ifmo.web.coursework.data.repository.HumanRepository;
 import com.ifmo.web.coursework.data.utils.FilterUtils;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
+import com.ifmo.web.coursework.log.Log;
+import com.ifmo.web.coursework.notification.Message;
+import com.ifmo.web.coursework.notification.jms.CustomJMSSender;
 import com.ifmo.web.coursework.webservices.exception.AlreadyExistsException;
 import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
 import com.ifmo.web.coursework.webservices.exception.NotFoundException;
@@ -26,6 +29,16 @@ public class HumanProfileController {
     private final HumanUtils humanUtils;
     private final FilterUtils filterUtils;
 
+    private final CustomJMSSender jms;
+
+    private void notify(String text) {
+        jms.send(CustomJMSSender.MAIL, Message.builder()
+                .to(humanUtils.getCurrentHuman().getEmail())
+                .subject("Your profile")
+                .text(text)
+                .build());
+    }
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public HumanResponse getProfile(@RequestParam(value = "id", required = false) Integer id) {
@@ -37,6 +50,7 @@ public class HumanProfileController {
                         new NotFoundException("No user with id '" + finalId + "' found in DB")));
     }
 
+    @Log
     @PatchMapping
     @ResponseStatus(HttpStatus.OK)
     public HumanResponse updateProfile(HumanResponse newProfile) {
@@ -130,6 +144,7 @@ public class HumanProfileController {
         return HumanResponse.fromHuman(edited);
     }
 
+    @Log
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/privileged")
     public HumanResponse makePrivileged(@RequestParam("id") int id,
@@ -138,11 +153,23 @@ public class HumanProfileController {
         Human edited = humanRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found by id " + id));
 
-        if (null != researcher && !researcher.equals(edited.getResearcher()))
+        boolean researchered, moderatored;
+
+        if (researchered = null != researcher && !researcher.equals(edited.getResearcher()))
             edited.setResearcher(researcher);
 
-        if (null != moderator && !moderator.equals(edited.getModerator()))
+        if (moderatored = null != moderator && !moderator.equals(edited.getModerator()))
             edited.setModerator(moderator);
+
+        if (researchered)
+            notify("You are a researcher now! Congratulations!");
+        else
+            notify("Sorry, you are no more a researcher...");
+
+        if (moderatored)
+            notify("You are a moderator now! Congratulations!");
+        else
+            notify("Sorry, you are no more a moderator...");
 
         humanRepository.save(edited);
         return HumanResponse.fromHuman(edited);
@@ -171,10 +198,11 @@ public class HumanProfileController {
     }
 
     @Autowired
-    public HumanProfileController(HumanRepository humanRepository, CountryRepository countryRepository, HumanUtils humanUtils, FilterUtils filterUtils) {
+    public HumanProfileController(HumanRepository humanRepository, CountryRepository countryRepository, HumanUtils humanUtils, FilterUtils filterUtils, CustomJMSSender jms) {
         this.humanRepository = humanRepository;
         this.countryRepository = countryRepository;
         this.humanUtils = humanUtils;
         this.filterUtils = filterUtils;
+        this.jms = jms;
     }
 }

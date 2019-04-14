@@ -31,6 +31,9 @@ public class CustomXMPPSender {
 
     public void send(Message message) {
         try {
+            if (null == message.getFrom())
+                message.setFrom(defaultFrom);
+
             XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
                     .setUsernameAndPassword(message.getFrom().split("@")[0], password)
                     .setXmppDomain(message.getFrom().split("@")[1])

@@ -3,11 +3,15 @@ package com.ifmo.web.coursework.webservices.controller;
 import com.ifmo.web.coursework.data.entity.*;
 import com.ifmo.web.coursework.data.repository.*;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
+import com.ifmo.web.coursework.log.Log;
+import com.ifmo.web.coursework.notification.Message;
+import com.ifmo.web.coursework.notification.jms.CustomJMSSender;
 import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
 import com.ifmo.web.coursework.webservices.exception.NotFoundException;
 import com.ifmo.web.coursework.webservices.response.DonationResponse;
 import com.ifmo.web.coursework.webservices.response.ExpeditionResponse;
 import com.ifmo.web.coursework.webservices.response.SuccessResponse;
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +23,9 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log
 @RestController
+@ToString
 @RequestMapping("/expedition")
 public class ExpeditionController {
     private final ExpeditionRepository expeditionRepository;
@@ -29,6 +35,20 @@ public class ExpeditionController {
     private final HumanRepository humanRepository;
     private final HumanUtils humanUtils;
 
+    private final CustomJMSSender jms;
+
+    @Log.Exclude
+    private void notify(String expeditionName, String text, List<Human> humans) {
+        humans.stream()
+                .map(Human::getEmail)
+                .forEach(email -> jms.send(CustomJMSSender.MAIL, Message.builder()
+                        .to(email)
+                        .subject(expeditionName + " expedition")
+                        .text(text)
+                        .build()));
+    }
+
+    @Log.Exclude
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public ExpeditionResponse get(@RequestParam("id") Integer id) {
@@ -81,6 +101,7 @@ public class ExpeditionController {
 
         Expedition expedition = expeditionRepository.findById(expeditionResponse.getId()).orElseThrow(() ->
                 new NotFoundException("Expedition not found by id '" + expeditionResponse.getId() + "'"));
+        String oldName = expedition.getName();
 
         if (null != expeditionResponse.getName())
             expedition.setName(expeditionResponse.getName());
@@ -97,9 +118,16 @@ public class ExpeditionController {
             expedition.setCosts(expeditionResponse.getCurrent_sum());
 
         expeditionRepository.save(expedition);
+
+        notify(oldName,
+                "The expedition '" + oldName + "' has been updated", expedition.getSubscriptionExpeditionsByExpeditionId().stream()
+                        .map(SubscriptionExpedition::getHumanByHumanId)
+                        .collect(Collectors.toList())
+        );
         return ExpeditionResponse.fromExpedition(expedition);
     }
 
+    @Log.Exclude
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
     public List<ExpeditionResponse> search(@RequestParam(value = "amount", required = false, defaultValue = "20") int amount,
@@ -125,6 +153,12 @@ public class ExpeditionController {
                 new NotFoundException("Expedition not found by id '" + id + "'"));
         expedition.setBanned(banned);
         expeditionRepository.save(expedition);
+
+        notify(expedition.getName(), "The expedition '" + expedition.getName() + "' has been " +
+                        (banned ? "" : "un") + "banned",
+                subscriptionRepository.findAllByExpeditionId(id).stream()
+                        .map(SubscriptionExpedition::getHumanByHumanId)
+                        .collect(Collectors.toList()));
         return ExpeditionResponse.fromExpedition(expedition);
     }
 
@@ -147,6 +181,9 @@ public class ExpeditionController {
             subscriptionExpedition.setHumanId(humanUtils.getCurrentId());
             subscriptionRepository.save(subscriptionExpedition);
 
+            notify(expedition.getName(), "You are now subscribed to the '" + expedition.getName() + "' expedition's news",
+                    Collections.singletonList(humanUtils.getCurrentHuman()));
+
             return new SuccessResponse("Subscribed");
         } else {
             Optional<SubscriptionExpedition> byId = subscriptionRepository.findById(pk);
@@ -155,6 +192,9 @@ public class ExpeditionController {
                 subscriptionRepository.delete(byId.get());
                 return new SuccessResponse("Unsubscribed");
             }
+
+            notify(expedition.getName(), "You are no more subscribed to the '" + expedition.getName() + "' expedition's news",
+                    Collections.singletonList(humanUtils.getCurrentHuman()));
 
             return new SuccessResponse("Not subscribed yet");
         }
@@ -202,13 +242,20 @@ public class ExpeditionController {
             expedition.getParticipationExpeditionsByExpeditionId().add(pe);
             expeditionRepository.save(expedition);
 
+            notify(expedition.getName(), "You are now a member of the expedition '" + expedition.getName() + "'",
+                    Collections.singletonList(human));
+
             return ExpeditionResponse.fromExpedition(expedition);
         } else if (!add && expedition.getParticipationExpeditionsByExpeditionId().stream()
                 .map(ParticipationExpedition::getHumanId)
                 .anyMatch(humanId::equals)) {
+
             expedition.getParticipationExpeditionsByExpeditionId().stream()
                     .filter(hid -> hid.getHumanId().equals(humanId))
                     .forEach(participationExpedition -> {
+                        notify(expedition.getName(), "You have been excluded from the expedition '" + expedition.getName() + "'",
+                                Collections.singletonList(human));
+
                         participationRepository.deleteById(participationExpedition.getParticipationExpeditionId());
                         expedition.getParticipationExpeditionsByExpeditionId().remove(participationExpedition);
                     });
@@ -219,6 +266,7 @@ public class ExpeditionController {
         return ExpeditionResponse.fromExpedition(expedition);
     }
 
+    @Log.Exclude
     @GetMapping("/donations")
     @ResponseStatus(HttpStatus.OK)
     public List<DonationResponse> getDonations(@RequestParam("expedition_id") Integer expeditionId) {
@@ -244,12 +292,13 @@ public class ExpeditionController {
     }
 
     @Autowired
-    public ExpeditionController(ExpeditionRepository expeditionRepository, ExpeditionStageRepository stageRepository, SubscriptionExpeditionRepository subscriptionRepository, ParticipationExpeditionRepository participationRepository, HumanRepository humanRepository, HumanUtils humanUtils) {
+    public ExpeditionController(ExpeditionRepository expeditionRepository, ExpeditionStageRepository stageRepository, SubscriptionExpeditionRepository subscriptionRepository, ParticipationExpeditionRepository participationRepository, HumanRepository humanRepository, HumanUtils humanUtils, CustomJMSSender jms) {
         this.expeditionRepository = expeditionRepository;
         this.stageRepository = stageRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.participationRepository = participationRepository;
         this.humanRepository = humanRepository;
         this.humanUtils = humanUtils;
+        this.jms = jms;
     }
 }

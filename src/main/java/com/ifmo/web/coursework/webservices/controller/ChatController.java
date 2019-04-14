@@ -5,6 +5,7 @@ import com.ifmo.web.coursework.data.repository.ChatRepository;
 import com.ifmo.web.coursework.data.repository.HumanRepository;
 import com.ifmo.web.coursework.data.utils.FilterUtils;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
+import com.ifmo.web.coursework.log.Log;
 import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
 import com.ifmo.web.coursework.webservices.exception.NotFoundException;
 import com.ifmo.web.coursework.webservices.response.ChatResponse;
@@ -47,6 +48,7 @@ public class ChatController {
                 .collect(Collectors.toList());
     }
 
+    @Log
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ChatResponse addChat(ChatResponse chatResponse) {
@@ -72,6 +74,7 @@ public class ChatController {
         return ChatResponse.fromChat(chat);
     }
 
+    @Log
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping
     public ChatResponse editChat(ChatResponse chatResponse) {
