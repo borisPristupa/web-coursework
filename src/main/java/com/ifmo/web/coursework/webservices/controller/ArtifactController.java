@@ -3,6 +3,9 @@ package com.ifmo.web.coursework.webservices.controller;
 import com.ifmo.web.coursework.data.entity.*;
 import com.ifmo.web.coursework.data.repository.*;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
+import com.ifmo.web.coursework.log.Log;
+import com.ifmo.web.coursework.notification.Message;
+import com.ifmo.web.coursework.notification.jms.CustomJMSSender;
 import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
 import com.ifmo.web.coursework.webservices.exception.NotFoundException;
 import com.ifmo.web.coursework.webservices.response.ArtifactResponse;
@@ -12,17 +15,18 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Log
 @RestController
 @RequestMapping("/artifact")
 public class ArtifactController {
@@ -34,6 +38,20 @@ public class ArtifactController {
     private final CountryRepository countryRepository;
     private final HumanUtils humanUtils;
 
+    private final CustomJMSSender jms;
+
+    @Log.Exclude
+    private void notify(String artifactName, String text, List<Human> humans) {
+        humans.stream()
+                .map(Human::getEmail)
+                .forEach(email -> jms.send(CustomJMSSender.MAIL, Message.builder()
+                        .to(email)
+                        .subject(artifactName + " artifact")
+                        .text(text)
+                        .build()));
+    }
+
+    @Log.Exclude
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public ArtifactResponse getArtifact(@RequestParam("id") int id) {
@@ -103,6 +121,7 @@ public class ArtifactController {
 
         Artifact artifact = artifactRepository.findById(artifactResponse.getId()).orElseThrow(() ->
                 new NotFoundException("Artifact not found by id '" + artifactResponse.getId() + "'"));
+        String oldName = artifact.getName();
 
         if (null != artifactResponse.getName())
             artifact.setName(artifactResponse.getName());
@@ -126,6 +145,13 @@ public class ArtifactController {
                             new NotFoundException("Type of artifact not found: '" + artifactResponse.getType() + "'")));
 
         artifactRepository.save(artifact);
+
+        notify(oldName,
+                "The artifact '" + oldName + "' has been updated",
+                artifact.getAuctionByArtifactId().getSubscriptionAuctionsByAuctionId().stream()
+                        .map(SubscriptionAuction::getHumanByHumanId)
+                        .collect(Collectors.toList())
+        );
         return ArtifactResponse.fromArtifact(artifact);
     }
 
@@ -137,6 +163,13 @@ public class ArtifactController {
                 new NotFoundException("Artifact not found by id '" + id + "'"));
         artifact.setBanned(banned);
         artifactRepository.save(artifact);
+
+        notify(artifact.getName(), "The artifact '" + artifact.getName() + "' has been " +
+                        (banned ? "" : "un") + "banned",
+                subscriptionRepository.findAllByAuctionId(artifact.getAuctionByArtifactId().getAuctionId())
+                        .stream()
+                        .map(SubscriptionAuction::getHumanByHumanId)
+                        .collect(Collectors.toList()));
         return ArtifactResponse.fromArtifact(artifact);
     }
 
@@ -153,6 +186,7 @@ public class ArtifactController {
 
     }
 
+    @Log.Exclude
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
     public List<ArtifactResponse> search(@RequestParam(value = "amount", required = false, defaultValue = "20") int amount,
@@ -187,6 +221,7 @@ public class ArtifactController {
                 .collect(Collectors.toList());
     }
 
+    @Log.Exclude
     @GetMapping("/types")
     @ResponseStatus(HttpStatus.OK)
     public List<String> getTypes() {
@@ -214,6 +249,10 @@ public class ArtifactController {
             subscriptionAuction.setHumanId(humanUtils.getCurrentId());
             subscriptionRepository.save(subscriptionAuction);
 
+            notify(auction.getArtifactByArtifactId().getName(), "You are now subscribed to the '" +
+                            auction.getArtifactByArtifactId().getName() + "' artifacts's updates",
+                    Collections.singletonList(humanUtils.getCurrentHuman()));
+
             return new SuccessResponse("Subscribed");
         } else {
             Optional<SubscriptionAuction> byId = subscriptionRepository.findById(pk);
@@ -222,6 +261,10 @@ public class ArtifactController {
                 subscriptionRepository.delete(byId.get());
                 return new SuccessResponse("Unsubscribed");
             }
+
+            notify(auction.getArtifactByArtifactId().getName(), "You are no more subscribed to the '" +
+                            auction.getArtifactByArtifactId().getName() + "' artifacts's updates",
+                    Collections.singletonList(humanUtils.getCurrentHuman()));
 
             return new SuccessResponse("Not subscribed yet");
         }
@@ -244,13 +287,21 @@ public class ArtifactController {
 
         auctionRepository.save(auction);
 
+        notify(auction.getArtifactByArtifactId().getName(),
+                "The price of the artifact '" + auction.getArtifactByArtifactId().getAuctionByArtifactId() +
+                        "' has risen",
+                auction.getSubscriptionAuctionsByAuctionId().stream()
+                        .map(SubscriptionAuction::getHumanByHumanId)
+                        .filter(human -> humanUtils.getCurrentId() != human.getHumanId())
+                        .collect(Collectors.toList()));
+
         auction.getArtifactByArtifactId().setAuctionByArtifactId(auction);
 
         return ArtifactResponse.fromArtifact(auction.getArtifactByArtifactId());
     }
 
     @Autowired
-    public ArtifactController(ArtifactRepository artifactRepository, AuctionRepository auctionRepository, SubscriptionAuctionRepository subscriptionRepository, CategoryRepository categoryRepository, AgeRepository ageRepository, CountryRepository countryRepository, HumanUtils humanUtils) {
+    public ArtifactController(ArtifactRepository artifactRepository, AuctionRepository auctionRepository, SubscriptionAuctionRepository subscriptionRepository, CategoryRepository categoryRepository, AgeRepository ageRepository, CountryRepository countryRepository, HumanUtils humanUtils, CustomJMSSender jms) {
         this.artifactRepository = artifactRepository;
         this.auctionRepository = auctionRepository;
         this.subscriptionRepository = subscriptionRepository;
@@ -258,5 +309,6 @@ public class ArtifactController {
         this.ageRepository = ageRepository;
         this.countryRepository = countryRepository;
         this.humanUtils = humanUtils;
+        this.jms = jms;
     }
 }
