@@ -8,6 +8,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 @PropertySource("classpath:mail.properties")
 public class CustomMailSender {
@@ -20,7 +22,7 @@ public class CustomMailSender {
     public void sendMail(Message message) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
 
-        mailMessage.setFrom(message.getFrom());
+        mailMessage.setFrom(Optional.ofNullable(message.getFrom()).orElse(defaultFrom));
         mailMessage.setTo(message.getTo());
         mailMessage.setSubject(message.getSubject());
         mailMessage.setText(message.getText());
