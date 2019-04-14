@@ -34,7 +34,7 @@ public class LoginController {
         return HumanResponse.fromHuman(humanUtils.getCurrentHuman());
     }
 
-    @com.ifmo.web.coursework.log.Log.Exclude
+    @Log.Exclude
     @PostMapping("/up")
     @ResponseStatus(HttpStatus.CREATED)
     public HumanResponse signUp(@RequestParam("username") String username,
