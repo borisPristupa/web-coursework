@@ -194,10 +194,10 @@ public class ArtifactController {
                                          @RequestParam(value = "on_auction", required = false) Boolean auctioned,
                                          @RequestParam("types[]") List<String> types,
                                          @RequestParam("ages[]") List<String> ages,
-                                         @RequestParam("country") String country,
+                                         @RequestParam(value = "country", required = false) String country,
                                          @RequestParam(value = "price_min", required = false) Integer priceMin,
                                          @RequestParam(value = "price_max", required = false) Integer priceMax) {
-        if (!countryRepository.findByName(country).isPresent())
+        if (null != country && !countryRepository.findByName(country).isPresent())
             throw new NotFoundException("Country not found '" + country + "'");
 
         List<Artifact> artifacts;
@@ -217,7 +217,7 @@ public class ArtifactController {
                 .map(ArtifactResponse::fromArtifact)
                 .filter(artifactResponse -> types.isEmpty() || types.contains(artifactResponse.getType()))
                 .filter(artifactResponse -> ages.isEmpty() || ages.contains(artifactResponse.getAge()))
-                .filter(artifactResponse -> country.equals(artifactResponse.getCountry()))
+                .filter(artifactResponse -> null == country || country.equals(artifactResponse.getCountry()))
                 .collect(Collectors.toList());
     }
 
