@@ -8,11 +8,13 @@ import java.util.function.Predicate;
 
 @Component
 public class FilterUtils {
-    public <T> Predicate<T> nameFilter(String pattern, Function<T, String>... nameResolvers) {
+    public final <T> Predicate<T> nameFilter(String pattern, Function<T, String>... nameResolvers) {
         return o ->
                 pattern.trim().isEmpty() ||
-                        Arrays.stream(nameResolvers).anyMatch(
-                                resolver -> Arrays.stream(pattern.trim().split(" "))
-                                        .anyMatch(resolver.apply(o)::startsWith));
+                        Arrays.stream(nameResolvers)
+                                .filter(resolver -> null != resolver.apply(o))
+                                .anyMatch(
+                                        resolver -> Arrays.stream(pattern.trim().toLowerCase().split(" "))
+                                                .anyMatch(resolver.apply(o).toLowerCase()::startsWith));
     }
 }
