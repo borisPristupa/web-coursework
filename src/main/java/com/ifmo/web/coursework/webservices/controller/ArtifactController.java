@@ -20,10 +20,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log
@@ -226,6 +223,7 @@ public class ArtifactController {
     @ResponseStatus(HttpStatus.OK)
     public List<String> getTypes() {
         return categoryRepository.findAll().stream()
+                .sorted(Comparator.comparing(Category::getCategoryId))
                 .map(Category::getName)
                 .collect(Collectors.toList());
     }

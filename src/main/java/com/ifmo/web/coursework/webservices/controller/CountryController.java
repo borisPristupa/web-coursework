@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,7 @@ public class CountryController {
     @ResponseStatus(HttpStatus.OK)
     public List<String> getCountryNames() {
         return countryRepository.findAll().stream()
+                .sorted(Comparator.comparing(Country::getName))
                 .map(Country::getName)
                 .collect(Collectors.toList());
     }
