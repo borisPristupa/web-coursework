@@ -52,7 +52,7 @@ public class LoggingAspect {
             returnValue = point.proceed();
         } catch (Throwable t) {
             logger.error("Exception occurred for user #" + humanUtils.getCurrentId() +
-                    " at method " + methodSignature);
+                    " at method " + methodSignature, t);
             throw t;
         }
 
