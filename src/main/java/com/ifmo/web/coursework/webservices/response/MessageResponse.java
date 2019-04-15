@@ -16,7 +16,7 @@ public class MessageResponse {
     private Integer id, chat_id;
     private String text;
     private Timestamp date;
-    private HumanResponse sender;
+    private Integer sender_id;
     public static MessageResponse fromMessage(Message message) {
         if (null == message) return null;
         return builder()
@@ -24,7 +24,7 @@ public class MessageResponse {
                 .chat_id(message.getChatId())
                 .text(message.getBody())
                 .date(message.getDate())
-                .sender(HumanResponse.fromHuman(message.getHumanByHumanId()))
+                .sender_id(message.getHumanId())
                 .build();
     }
 
