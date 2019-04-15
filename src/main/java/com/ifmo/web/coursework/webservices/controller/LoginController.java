@@ -72,12 +72,14 @@ public class LoginController {
         return HumanResponse.fromHuman(human);
     }
 
+    @Log.Exclude
     @PostMapping(value = "/err", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse signError(@RequestParam("msg") String message) {
         return new ErrorResponse("Authentication failed: " + message);
     }
 
+    @Log.Exclude
     @RequestMapping("/out/success")
     @ResponseStatus(HttpStatus.OK)
     public SuccessResponse signOut() {
