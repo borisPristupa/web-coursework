@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ public class StageController {
     @ResponseStatus(HttpStatus.OK)
     public List<String> getStagesNames() {
         return expeditionStageRepository.findAll().stream()
+                .sorted(Comparator.comparing(ExpeditionStage::getStageId))
                 .map(ExpeditionStage::getName)
                 .collect(Collectors.toList());
     }
