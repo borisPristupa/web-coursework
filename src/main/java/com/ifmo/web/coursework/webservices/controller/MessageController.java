@@ -10,7 +10,6 @@ import com.ifmo.web.coursework.log.Log;
 import com.ifmo.web.coursework.notification.jms.CustomJMSSender;
 import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
 import com.ifmo.web.coursework.webservices.exception.NotFoundException;
-import com.ifmo.web.coursework.webservices.response.HumanResponse;
 import com.ifmo.web.coursework.webservices.response.MessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -49,8 +48,8 @@ public class MessageController {
         ArrayList<String> missing = new ArrayList<>();
         if (null == messageResponse.getChat_id())
             missing.add("chat_id");
-        if (null == messageResponse.getSender())
-            missing.add("sender");
+        if (null == messageResponse.getSender_id())
+            missing.add("sender_id");
         if (null == messageResponse.getText())
             missing.add("text");
 
@@ -61,12 +60,12 @@ public class MessageController {
                 new NotFoundException("Chat not found by id '" + messageResponse.getChat_id() + "'"));
 
         messageResponse.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        messageResponse.setSender(HumanResponse.fromHuman(humanUtils.getCurrentHuman()));
+        messageResponse.setSender_id(humanUtils.getCurrentId());
 
         Message message = new Message();
         message.setBody(messageResponse.getText());
         message.setChatId(messageResponse.getChat_id());
-        message.setHumanId(messageResponse.getSender().getId());
+        message.setHumanId(messageResponse.getSender_id());
         message.setDate(messageResponse.getDate());
         messageRepository.save(message);
 
