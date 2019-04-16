@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/chat")
@@ -56,29 +55,45 @@ public class ChatController {
     @Log
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ChatResponse addChat(ChatResponse chatResponse) {
+    public ChatResponse addChat(ChatResponse chatResponse,
+                                @RequestParam("members[]") List<Integer> members) {
         ArrayList<String> missing = new ArrayList<>();
         if (null == chatResponse.getName())
             missing.add("name");
-        if (null == chatResponse.getMembers())
-            missing.add("members");
+//        if (null == chatResponse.getMembers())
+//            missing.add("members");
 
         if (!missing.isEmpty())
             throw new MissingRequiredArgumentException(missing.toArray(new String[0]));
 
+        members.add(humanUtils.getCurrentId());
+
 //        chatResponse.getMembers().add(humanUtils.getCurrentId());
 
         Chat chat = new Chat();
-        chat.setMembers(
-                Stream.of(1, humanUtils.getCurrentId())
-                        .map(humanRepository::getOne)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList()));
+//        chat.setMembers(chatResponse.getMembers().stream()
+        chat.setMembers(members.stream()
+                .map(humanRepository::getOne)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
+//        chat.setMembers(
+//                Stream.of(1, humanUtils.getCurrentId())
+//                        .map(humanRepository::getOne)
+//                        .filter(Objects::nonNull)
+//                        .collect(Collectors.toList()));
         chat.setName(chatResponse.getName());
         chat.setDescription(Optional.ofNullable(chatResponse.getDescription()).orElse(""));
         chatRepository.save(chat);
 
-        Stream.of(1, humanUtils.getCurrentId())
+
+//        Stream.of(1, humanUtils.getCurrentId())
+//                .map(humanRepository::getOne)
+//                .filter(Objects::nonNull)
+//                .forEach(human -> {
+//                    human.getChats().add(chatRepository.findOne(Example.of(chat)).orElse(chat));
+//                    humanRepository.save(human);
+//                });
+        members.stream()
                 .map(humanRepository::getOne)
                 .filter(Objects::nonNull)
                 .forEach(human -> {
