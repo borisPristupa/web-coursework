@@ -1,6 +1,7 @@
 package com.ifmo.web.coursework.data.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
@@ -24,8 +25,8 @@ public class Expedition {
     private Route routeByRoutePlan;
     private Route routeByRouteCurrent;
     private Human humanByHead;
-    private Collection<ParticipationExpedition> participationExpeditionsByExpeditionId;
-    private Collection<SubscriptionExpedition> subscriptionExpeditionsByExpeditionId;
+    private Collection<ParticipationExpedition> participationExpeditionsByExpeditionId = new ArrayList<>();
+    private Collection<SubscriptionExpedition> subscriptionExpeditionsByExpeditionId = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -12,6 +12,8 @@ import com.ifmo.web.coursework.webservices.response.DonationResponse;
 import com.ifmo.web.coursework.webservices.response.ExpeditionResponse;
 import com.ifmo.web.coursework.webservices.response.SuccessResponse;
 import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
@@ -82,7 +84,13 @@ public class ExpeditionController {
         created.setDescription(expeditionResponse.getDescription());
         created.setHumanByHead(humanUtils.getCurrentHuman());
 
-        expeditionRepository.save(created);
+        try {
+            expeditionRepository.save(created);
+        } catch (Exception e) {
+            Logger logger = LoggerFactory.getLogger(ExpeditionController.class);
+            logger.error("WTF", e);
+            throw e;
+        }
 
         return ExpeditionResponse.fromExpedition(
                 expeditionRepository.findOne(Example.of(created))

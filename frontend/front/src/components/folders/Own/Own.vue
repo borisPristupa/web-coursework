@@ -1,121 +1,203 @@
 <template>
-  <div class="overflow-auto" id="Own">
+  <div id="Own">
     <h3 class="col-12">Биография</h3>
-    <div v-if="this.json">
+    <div>
         <div class="row">
-          <div class="info col-md-8  col-sm-12">
-            <div id="info" class="bg-dark">
-              <img id="reportimg" @click="report" src="../../../img/info_block.png">
-              <img id="avatar" class="avatar" src="../../../img/testava.png">
-              <h3>{{user.first_name}} {{user.second_name}} {{user.last_name}}</h3>
-              <p>Telegram: {{user.tg_nickname}}</p>
-              <p>E-mail: {{user.email}}</p>
-              <div v-bind:onloadstart="jobs">
-                <b v-if="user.moderator">модератор</b>
-                <b v-if="user.archaeologist">, археолог</b>
-                <b v-if="user.researcher">, исследователь</b>
-                <b v-if="user.collector">, коллекцонер</b>
-                <b v-if="user.sponsor">, спонсор</b>
+          <div class="info col-12 ">
+            <div id="info">
+              <img id="editimg" @click="edit" src="../../../img/edit.png">
+              <img id="avatar" class="avatar" src="../../../img/avatar.png">
+
+              <div v-if="!isedit">
+
+                  <h3>{{user.first_name}} {{user.second_name}} {{user.last_name}}</h3>
+                  <p>Telegram: {{user.tg_nickname}}</p>
+                  <p>E-mail: {{user.email}}</p>
+
+                <div>
+                  <b v-if="user.moderator">модератор</b>
+                  <b v-if="user.archaeologist"> археолог</b>
+                  <b v-if="user.researcher"> исследователь</b>
+                  <b v-if="user.collector"> коллекцонер</b>
+                  <b v-if="user.sponsor"> спонсор</b>
+                </div>
+                <br>
+                <p>{{user.country}}</p>
+                <p>{{user.bio}}</p>
               </div>
-              <br>
-              <p>{{user.bio}}</p>
+              <div v-else>
+                <input v-model="user.first_name">
+                <input v-model="user.second_name">
+                <input v-model="user.last_name">
+                <input v-model="user.tg_nickname">
+                <input v-model="user.email">
+
+
+                <!--<div v-bind:onloadstart="jobs">-->
+                  <!--<b v-if="user.moderator">модератор</b>-->
+                  <!--<b v-if="user.archaeologist">, археолог</b>-->
+                  <!--<b v-if="user.researcher">, исследователь</b>-->
+                  <!--<b v-if="user.collector">, коллекцонер</b>-->
+                  <!--<b v-if="user.sponsor">, спонсор</b>-->
+                <!--</div>-->
+                <br>
+
+                <select v-model="user.country" >
+                  <option v-for="country in countries" :value="country">{{country}}</option>
+                </select>
+                <input v-model="user.bio">
+
+              </div>
+              <button class="align-content-center bg-danger" id="exitbtn" @click="exit">Выход</button>
+
             </div>
           </div>
 
-          <div id="contact" class="col-md-4 col-12 d-md-flex align-self-center align-self-md-auto">
+            <!--<div id="contact" class="col-md-4 col-12 d-md-flex align-self-center align-self-md-auto">-->
 
-            <div class="row">
-              <div class=" likes col-md-12 col-6 text-center align-self-md-center">
-                <!--<img id="likeimg"  src="../../../img/like.png"><br>-->
-                <!--<b>{{user.likes}}</b><br>-->
-                <button id="writebtn" @click="writemsg">Написать</button>
-              </div>
+              <!--<div class="row">-->
+                <!--<div class=" likes col-md-12 col-6 text-center align-self-md-center">-->
+                  <!--&lt;!&ndash;<img id="likeimg"  src="../../../img/like.png"><br>&ndash;&gt;-->
+                  <!--&lt;!&ndash;<b>{{user.likes}}</b><br>&ndash;&gt;-->
+                  <!--&lt;!&ndash;<button id="writebtn" @click="writemsg">Написать</button>&ndash;&gt;-->
+                <!--</div>-->
 
-              <div class=" likes col-md-12 col-6 text-center align-self-md-center">
-                <!--<img id="dislikeimg" src="../../../img/dislike.png"><br>-->
-                <!--<b>{{user.dislikes}}</b><br>-->
-                <button id="exitbtn" @click="exit">Выход</button>
-              </div>
-            </div>
+                <!--<div class=" likes col-md-12 col-6 text-center align-self-md-center">-->
+                  <!--&lt;!&ndash;<img id="dislikeimg" src="../../../img/dislike.png"><br>&ndash;&gt;-->
+                  <!--&lt;!&ndash;<b>{{user.dislikes}}</b><br>&ndash;&gt;-->
+                  <!--<button id="exitbtn" @click="exit">Выход</button>-->
+                <!--</div>-->
+            <!--</div>-->
 
 
-          </div>
+          <!--</div>-->
         </div>
     </div>
   </div>
 </template>
 <script>
+  var $ = require('jquery')
+  window.jQuery = $ //для подкл jquery
   export default {
-    props:['json'],
     name:'Own',
+    components:{
+    },
     data(){
+      var use = JSON.parse(localStorage.getItem('client'));
+      // console.log(use.email);
+      // console.log(localStorage.getItem('client'));
 
-      var user = JSON.parse(this.json);
-
-
-      /*{
-        "id":1,
-        "username":"user",
-        "first_name":"first",
-        "second_name":"second",
-        "last_name": null,
-        "bio": "",
-        "vk_id": 1630342124,
-        "tg_nickname": null,
-        "email": "e@mail.com",
-        "likes": 0,
-        "dislikes": 0,
-        "banned": false,
-        "coutry": 'Россия',
-        "moderator": false,
-        "archaeologist": false,
-        "researcher": true,
-        "collector": false,
-        "sponsor": false
-      }*/
 
       return{
         user: {
-          id: user.id,
-          username: user.username,
-          first_name: user.first_name,
-          second_name: user.second_name,
-          last_name: user.last_name,
-          bio: user.bio,
+          id: use.id,
+          username: use.username,
+          first_name: use.first_name,
+          second_name: use.second_name,
+          last_name: use.last_name,
+          bio: use.bio,
 
-          vk_id: user.vk_id,
-          tg_nickname: user.tg_nickname,
-          email: user.email,
+          vk_id: use.vk_id,
+          tg_nickname: use.tg_nickname,
+          email: use.email,
 
-          likes:user.likes,
-          dislikes:user.dislikes,
-          banned: user.banned,
+          likes:use.likes,
+          dislikes:use.dislikes,
+          banned: use.banned,
 
-          coutry: {
-            id: user.coutry.id,
-            name: user.coutry.name},
+          country: use.country,
 
-          moderator: user.moderator,
-          archaeologist: user.archaeologist,
-          researcher: user.researcher,
-          collector: user.collector,
-          sponsor: user.sponsor
+
+          moderator: use.moderator,
+          archaeologist: use.archaeologist,
+          researcher: use.researcher,
+          collector: use.collector,
+          sponsor: use.sponsor
 
           },
 
-        component:'Info'
+        countries:[],
+
+        isedit:false,
+
       }
     },
     methods:{
       writemsg:function () {
-        alert('writemsg');
+        alert('writemsg');//TODO связать с сообщ
       },
       exit:function () {
-        alert('exit');
+        var exitdata = {
+          login: '',
+          password: '',
+          hasAccess:false
+        }
+
+        sessionStorage.setItem('client',JSON.stringify(exitdata))
+        location.reload(true)
       },
-      report:function () {
-        alert('set:report?')
-      },
+      edit(){
+
+        $.ajax({
+          async:false,
+          type: 'GET',
+          url: 'http://localhost:8181/country',
+          xhrFields: {withCredentials: true},
+          data:{},
+          success:(data)=>{
+            this.countries = data;
+          },
+          error:(msg)=>{
+            console.log(msg.responseText);
+            console.log(msg.status);
+          }
+        });
+
+
+        if (this.isedit == true){
+
+          $.ajax({
+            async:false,
+            type: 'PATCH',
+            url: 'http://localhost:8181/human',
+            xhrFields: {withCredentials: true},
+            data:{
+              id: this.user.id,
+              username: this.user.username,
+              first_name: this.user.first_name,
+              second_name: this.user.second_name,
+              last_name: this.user.last_name,
+              bio: this.user.bio,
+
+              vk_id: this.user.vk_id,
+              tg_nickname: this.user.tg_nickname,
+              email: this.user.email,
+
+              likes:this.user.likes,
+              dislikes:this.user.dislikes,
+              banned: this.user.banned,
+
+              country: this.user.country,
+
+              moderator: false,//TODO доделать
+              archaeologist: this.user.archaeologist,
+              researcher: false,
+              collector: this.user.collector,
+              sponsor: this.user.sponsor
+            },
+            success:(data)=>{
+              localStorage.setItem('client',JSON.stringify(data));
+              alert('успешно')
+            },
+            error:(msg)=>{
+              console.log(msg.responseText);
+              console.log(msg.status);
+            }
+          });
+
+        }
+        this.isedit = !this.isedit;
+      }
     }
 
   }
@@ -124,6 +206,7 @@
 <style>
 
   #info{
+    background: #1b1e23;
     color: whitesmoke;
     margin: 25px;
     padding: 10px;
@@ -136,10 +219,10 @@
     border-radius: 50%;
   }
 
-  #reportimg {
+  #editimg {
     float: right;
-    width: 10%;
-    height: 12%;
+    width: 60px;
+    height: 60px;
   }
 
   #contact{
