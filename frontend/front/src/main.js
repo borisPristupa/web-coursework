@@ -2,12 +2,8 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
-import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-
-
-import $ from 'jquery';
 
 
 new Vue({
@@ -16,8 +12,7 @@ new Vue({
   data:{
     button_name:'Создать акк?',
     buttons:['Люди','Экспед','Артефакты','Кабинет','Помощь']
-    // vk_img: 'src/',
-    // google_img:''
+
   },
   components: { App },
   template: '<App/>'

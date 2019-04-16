@@ -10,12 +10,16 @@ import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentExce
 import com.ifmo.web.coursework.webservices.exception.NotFoundException;
 import com.ifmo.web.coursework.webservices.response.ChatResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/chat")
@@ -24,6 +28,7 @@ public class ChatController {
     private final ChatRepository chatRepository;
     private final HumanRepository humanRepository;
     private final FilterUtils filterUtils;
+
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
@@ -42,9 +47,9 @@ public class ChatController {
                 .peek(chat -> chat.setMembers(humanRepository.findAllByChatId(chat.getChatId())))
                 .map(ChatResponse::fromChat)
                 .filter(Objects::nonNull)
-                .sorted(Comparator
-                        .<ChatResponse, Timestamp>comparing(chat -> chat.getLast_message().getDate())
-                        .reversed())
+//                .sorted(Comparator
+//                        .<ChatResponse, Timestamp>comparing(chat -> chat.getLast_message().getDate())
+//                        .reversed())
                 .collect(Collectors.toList());
     }
 
@@ -61,15 +66,25 @@ public class ChatController {
         if (!missing.isEmpty())
             throw new MissingRequiredArgumentException(missing.toArray(new String[0]));
 
+//        chatResponse.getMembers().add(humanUtils.getCurrentId());
+
         Chat chat = new Chat();
         chat.setMembers(
-                chatResponse.getMembers().stream()
-                        .map(r -> humanRepository.getOne(r.getId()))
+                Stream.of(1, humanUtils.getCurrentId())
+                        .map(humanRepository::getOne)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList()));
         chat.setName(chatResponse.getName());
         chat.setDescription(Optional.ofNullable(chatResponse.getDescription()).orElse(""));
         chatRepository.save(chat);
+
+        Stream.of(1, humanUtils.getCurrentId())
+                .map(humanRepository::getOne)
+                .filter(Objects::nonNull)
+                .forEach(human -> {
+                    human.getChats().add(chatRepository.findOne(Example.of(chat)).orElse(chat));
+                    humanRepository.save(human);
+                });
 
         return ChatResponse.fromChat(chat);
     }
@@ -89,16 +104,16 @@ public class ChatController {
         if (null != chatResponse.getName())
             chat.setName(chatResponse.getName());
 
-        if (null != chatResponse.getMembers()) {
-            chatResponse.getMembers().forEach(humanResponse -> {
-                if (chat.getMembers().stream().noneMatch(human -> human.getHumanId().equals(humanResponse.getId())))
-                    chatRepository.addMember(chat.getChatId(), humanResponse.getId());
-            });
-            chat.getMembers().forEach(human -> {
-                if (chatResponse.getMembers().stream().noneMatch(humanResponse -> human.getHumanId().equals(humanResponse.getId())))
-                    chatRepository.removeMember(chat.getChatId(), human.getHumanId());
-            });
-        }
+//        if (null != chatResponse.getMembers()) {
+//            chatResponse.getMembers().forEach(humanResponse -> {
+//                if (chat.getMembers().stream().noneMatch(human -> human.getHumanId().equals(humanResponse)))
+//                    chatRepository.addMember(chat.getChatId(), humanResponse);
+//            });
+//            chat.getMembers().forEach(human -> {
+//                if (chatResponse.getMembers().stream().noneMatch(humanResponse -> human.getHumanId().equals(humanResponse)))
+//                    chatRepository.removeMember(chat.getChatId(), human.getHumanId());
+//            });
+//        }
 
         chatRepository.save(chat);
         chat.setMembers(humanRepository.findAllByChatId(chat.getChatId()));
