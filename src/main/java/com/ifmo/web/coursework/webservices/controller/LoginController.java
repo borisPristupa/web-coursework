@@ -59,7 +59,12 @@ public class LoginController {
         human.setLastName(lastName);
         human.setVkId(vk_id);
 
-        humanRepository.save(human);
+        try {
+            humanRepository.save(human);
+        } catch (Exception e) {
+            logger.error("WTF", e);
+            throw e;
+        }
 
         jms.send(CustomJMSSender.MAIL, Message.builder()
                 .to(email)
