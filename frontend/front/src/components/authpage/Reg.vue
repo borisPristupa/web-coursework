@@ -41,6 +41,17 @@
     components:{
       $//для подкл jquery
     },
+    beforeCreate: function () {
+
+      var client = JSON.parse(sessionStorage.getItem('client'));
+
+      if (client == true){
+
+        this.$emit('getinfo',client)
+
+      }
+
+    },
     data(){
 
       return{
@@ -57,10 +68,10 @@
         },
 
 
-        nameplaceholder:'Name',
-        secplaceholder:'Second name',
-        lastplaceholder:'Last name',
-        mailplaceholder:'Email',
+        nameplaceholder:'Имя',
+        secplaceholder:'Фамилия',
+        lastplaceholder:'Отчество',
+        mailplaceholder:'Почта',
         loginplaceholder:'Логин',
         passplaceholder:'Пароль',
         reppassplaceholder:'Повторите пароль',
@@ -75,10 +86,8 @@
         this.$emit('getinfo',this.aut)
       },
       reg_in:function () {
-        this.same_pass
-        // if (this.aut.login == 'nursat') { //  надо написать валидацию значений
-        //   this.aut.hasAccess = true;
-        // }
+        this.same_pass;
+
         this.setuserdata()
       },
       validation:function () {
@@ -105,9 +114,13 @@
 
           },
 
-          success: function(){
+          success: function(data){
+            const parsed = JSON.stringify(data);
+            localStorage.setItem('client',parsed)
             alert('Вы успешно зарегестрировались!')
             self.aut.hasAccess = true;
+            sessionStorage.setItem('client',JSON.stringify(self.aut.hasAccess));
+
           },
           error: (msg)=> {
             console.log(msg.responseText);

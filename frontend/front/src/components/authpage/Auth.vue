@@ -12,8 +12,7 @@
         </div>
         <samp class="col-12 d-flex justify-content-center">{{this.errormsg}}</samp>
         <div class="col-12 d-flex justify-content-center">
-          <button class="col-4 signbtn"  @click="validation">Вход</button>
-          <!--@keyup.enter="setinfo"-->
+          <button class="col-4 signbtn"  @keyup.enter="validation"  @click="validation">Вход</button>
         </div>
 
       </div>
@@ -27,44 +26,92 @@
 <script>
   var $ = require('jquery')
   window.jQuery = $ //для подкл jquery
+
   export default {
     name:'Auth',
     components:{
       $//для подкл jquery
     },
-    created: function () {
-      $(document).ready(function ($) {
-      })
+    beforeCreate: function () {
+
+        var client = JSON.parse(sessionStorage.getItem('client'));
+
+        // alert(client.hasAccess);
+        if (client.hasAccess !== true){
+          return
+        }
+        else if (client.hasAccess === true){
+
+          $.ajax({
+            async: false,
+            type:'POST',
+            url: 'http://localhost:8181/sign/in',
+            xhrFields: {withCredentials: true},
+            data: {
+              username: client.login,
+              password: client.password
+            },
+            success: (data)=>{
+
+              if(window.localStorage) {
+
+                const parsed = JSON.stringify(data);
+
+                localStorage.setItem('client',parsed);
+
+                this.$emit('getinfo',client)
+
+              } else {
+
+              }
+            },
+            error: (msg)=> {
+              client.hasAccess = false;
+              console.log(msg.responseText);
+              console.log(msg.status);
+
+              self.errormsg = 'Сервер передал: '+ JSON.parse(msg.responseText).error;
+
+            }
+          });
+
+        }
+
     },
     data(){
+
 
       return {
         aut:{
           login: '',
           password: '',
-          hasAccess: false
+          hasAccess: false,
         },
+
 
         errormsg:'',
 
         loginplaceholder:'Логин',
         passplaceholder:'Пароль'
+
+
       }
+
+
     },
     methods:{
       setinfo:function(){
         this.$emit('getinfo',this.aut)
       },
       validation:function(){
-        if (this.aut.login ==''){
+        if (this.aut.login ===''){
           this.loginplaceholder = 'строка пуста'
-        }else if (this.aut.password ==''){
+        }else if (this.aut.password ===''){
           this.passplaceholder = 'строка пуста'
         }else {
           this.setuserdata();// тут обработка запроса
         }
       },
-
 
       setuserdata:function(){
           var self = this;
@@ -76,24 +123,23 @@
               username: this.aut.login,
               password: this.aut.password
             },
+            success: (data)=>{
 
-            success: function(data){
-              self.aut.hasAccess = true;
-              const parsed = JSON.stringify(self.aut);
-              LocalStorage.setItem('client',parsed)
+              if(window.localStorage) {
+
+                const parsed = JSON.stringify(data);
+                localStorage.setItem('client',parsed);
+                self.aut.hasAccess = true;
+                sessionStorage.setItem('client',JSON.stringify(self.aut));
+              } else {
+              }
             },
             error: (msg)=> {
+              self.aut.hasAccess = false;
               console.log(msg.responseText);
               console.log(msg.status);
 
               self.errormsg = 'Сервер передал: '+ JSON.parse(msg.responseText).error;
-              // var stat = status;
-              // alert(stat);
-              // var massage = JSON.parse(msg)
-              // alert(massage)
-              // self.errormsg = massage.error;
-              // console.log(msg + '\n' +stat);
-              // alert('test')
 
             }
           });
