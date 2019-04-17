@@ -64,8 +64,8 @@ public class MessageController {
 
         Message message = new Message();
         message.setBody(messageResponse.getText());
-        message.setChatId(messageResponse.getChat_id());
-        message.setHumanId(messageResponse.getSender_id());
+        message.setChatByChatId(chat);
+        message.setHumanByHumanId(humanUtils.getCurrentHuman());
         message.setDate(messageResponse.getDate());
         messageRepository.save(message);
 

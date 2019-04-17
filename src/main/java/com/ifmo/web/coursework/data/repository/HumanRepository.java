@@ -32,9 +32,12 @@ public interface HumanRepository extends JpaRepository<Human, Integer> {
     @Query("select a from Human a order by ((a.likes + 1)/(a.likes+a.dislikes + 2)) DESC, a.likes DESC")
     List<Human> findAllByPopularity();
 
-    @Query(value = "SELECT  h.* FROM human h " +
-            "JOIN human_chat hc on h.human_id = hc.human_id " +
-            "JOIN chat c on hc.chat_id = c.chat_id " +
-            "WHERE c.chat_id = ?1 GROUP BY h.human_id", nativeQuery = true)
+
+//    @Query(nativeQuery = true, value = "SELECT h.* FROM human_chat hc JOIN human h on hc.human_id = h.human_id WHERE hc.chat_id=?1")
+//    List<Human> getMembers(Integer chatId);
+
+    @Query(value = "SELECT  h.* FROM human_chat hc " +
+            "JOIN human h on h.human_id = hc.human_id " +
+            "WHERE chat_id = ?1", nativeQuery = true)
     List<Human> findAllByChatId(Integer chatId);
 }

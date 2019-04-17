@@ -21,6 +21,7 @@ public interface ChatRepository extends JpaRepository<Chat,Integer> {
     @Query(nativeQuery = true, value = "DELETE FROM human_chat WHERE chat_id=?1 AND human_id=?2")
     void removeMember(Integer chatId, Integer humanId);
 
+
     @Query("select a from Chat a join Message b on a.chatId = b.chatId  order by b.date")
     List<Chat> findAllByMessageOrderByDate();
 

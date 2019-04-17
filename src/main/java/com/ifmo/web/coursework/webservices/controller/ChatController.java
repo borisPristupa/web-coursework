@@ -57,9 +57,7 @@ public class ChatController {
     @GetMapping("/members")
     @ResponseStatus(HttpStatus.OK)
     public List<HumanResponse> getMembers(@RequestParam("chat_id") Integer chatId) {
-        return chatRepository.findById(chatId).orElseThrow(() ->
-                new NotFoundException("Chat not found by id '" + chatId + "'"))
-                .getMembers().stream()
+        return humanRepository.findAllByChatId(chatId).stream()
                 .map(HumanResponse::fromHuman)
                 .collect(Collectors.toList());
     }
