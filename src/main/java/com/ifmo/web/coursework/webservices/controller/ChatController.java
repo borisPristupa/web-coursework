@@ -10,6 +10,7 @@ import com.ifmo.web.coursework.log.Log;
 import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentException;
 import com.ifmo.web.coursework.webservices.exception.NotFoundException;
 import com.ifmo.web.coursework.webservices.response.ChatResponse;
+import com.ifmo.web.coursework.webservices.response.HumanResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
@@ -55,11 +56,11 @@ public class ChatController {
 
     @GetMapping("/members")
     @ResponseStatus(HttpStatus.OK)
-    public List<Integer> getMembers(@RequestParam("chat_id") Integer chatId) {
+    public List<HumanResponse> getMembers(@RequestParam("chat_id") Integer chatId) {
         return chatRepository.findById(chatId).orElseThrow(() ->
                 new NotFoundException("Chat not found by id '" + chatId + "'"))
                 .getMembers().stream()
-                .map(Human::getHumanId)
+                .map(HumanResponse::fromHuman)
                 .collect(Collectors.toList());
     }
 
