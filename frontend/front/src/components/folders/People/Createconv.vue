@@ -1,18 +1,27 @@
 <template>
-  <div class="container-12">
-    <div class="col-12 d-flex flex-row">
-      <button @click="back" class="col-12 col-sm-3 col-md-3 col-lg-2">назад</button>
+  <div class=" container-12">
+    <div class="  create col-12 d-flex flex-column">
 
-      <input class="col-12 col-sm-9 col-md-9 col-lg-10" v-model="convname" id="convname" placeholder="Введите название беседы">
+
+      <div class="col-12 d-flex flex-md-row flex-column ">
+        <button @click="back" class="col-12 col-sm-12 col-md-3 col-lg-2">назад</button>
+
+        <input class="col-12 col-sm-12 col-md-9 col-lg-10" v-model="convname" id="convname" placeholder="Введите название беседы">
+
+      </div>
+
+
+      <textarea class="col-12 p-3 m-2" v-model="description" placeholder="Введите описание беседы"></textarea>
+      <button class="col-12"@click="createconv">СОЗДАТЬ</button>
 
     </div>
     <br>
 
 
-    <div class="col-12">
+    <div class=" people col-12 overflow-auto">
 
       <ui class="col-12 d-flex" v-for="(human,index) in choosedpeople">
-          <img class="avatar2 " src="../../../img/avatar.png"><b class="convname ">{{human.username}}</b><button class="ml-auto" @click="remove(human,index)">X</button>
+          <img class="avatar2 " src="../../../img/avatar.png"><b class="convname ">{{human.username}}</b><button class="ml-auto" @click="remove(human,index)">X</button><br>
       </ui>
       <hr>
 
@@ -37,9 +46,6 @@
 
 
     </div>
-
-
-    <button class="col-12"@click="createconv">СОЗДАТЬ</button>
 
 
 
@@ -133,8 +139,8 @@
             data:{
               id: 31231231,
               name:this.convname,
-              "members": 1,
-              description:'.'
+              "members": this.choosedpeopleid,
+              description:this.description,
             },
             success:(data_chat)=>{
 

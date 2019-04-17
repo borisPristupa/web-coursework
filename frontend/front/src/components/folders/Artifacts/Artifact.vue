@@ -66,7 +66,6 @@
           <p>Поиск по типу</p>
           <a v-for="type in types">
             <input type="checkbox" :value="type" v-model="checkedtypes" @change="findart" >{{type}}
-
           </a>
         </div>
 
@@ -113,23 +112,45 @@
 
       <div class="col-12 col-md-9">
         <div class="col-12 p-3 d-none d-md-block">
+          <button @click="createartpage" class="btn btn-dark">{{createbttn}}</button>
           <!--<a> Here is page number 1 2 3 4 5 6 7 8</a>-->
         </div>
 
+        <div v-if="iscreateart" class="createart col-12">
 
 
-        <div class="col-12 artifacts  mr-md-2 ">
-          <ul v-for="art in artifacts" class="d-flex " @click="artpage(art)">
+          Введите название:<input type="text" v-model="newartname" placeholder="Название артефакта">{{newartname}}<br><br><hr>
+          Введите описание:<input type="text" v-model="newartdescription" placeholder="Описание">{{newartdescription}}<br><br><hr>
+          <input type="checkbox" v-model="isnewartauction">
+          <div v-if="isnewartauction">
+            <input type="number" v-model="newartprice">${{newartprice}}
+          </div>
+          <button @click="createart" class="btn btn-secondary">Создать</button>
 
-            <img class="articonmini" src="../../../img/artifact.png" >
+        </div>
 
-            <div class="col-12"  >
-              <em class="col-6">{{art.name}}</em> <em class="col-6">{{art.current_sum}}</em>
-              <br>
-              <em>{{art.description}}...</em>
+        <div v-else class="col-12 artifacts  mr-md-2 ">
+          <hr class="col-11">
+          <ul v-for="art in artifacts" class="d-flex flex-column m-0 p-0" @click="artpage(art)">
+
+            <div class="flex-row">
+              <div class="col-2">
+                <img class="articonmini" src="../../../img/artifact.png" >
+              </div>
+
+              <div class="col-12"  >
+                <em class="col-6">{{art.name}}</em>
+                <em class="col-6">{{art.type}}</em>
+                <br>
+                <div class="shortdescription col-10 ">{{art.description}}</div>
+
+              </div>
             </div>
+            <hr class="col-11" >
+
 
           </ul>
+
         </div>
       </div>
 
@@ -145,6 +166,7 @@
       <div class="col-12">
         <artpage></artpage>
       </div>
+
 
 
     </div>
@@ -172,14 +194,17 @@
 
     },
     data(){
-
-
-
-
       return{
         isartpage:false,
 
         isfiltre:false,
+
+        iscreateart:false,
+        newartname:'',
+        newartdescription:'',
+        newartprice:'',
+        isnewartauction:false,
+        createbttn:'Создать',
 
 
         types:[],
@@ -361,6 +386,46 @@
         localStorage.setItem('isartpage',JSON.stringify(this.isartpage));
       },
 
+      createartpage(){
+        if (this.createbttn == 'Создать') {
+          this.createbttn = 'Назад'
+        }else  this.createbttn = 'Создать'
+
+        this.iscreateart=!this.iscreateart
+
+      },
+      createart() {
+        $.ajax({
+          type:'POST',
+          url: 'http://localhost:8181/artifact',
+          xhrFields: {withCredentials: true},
+          data: {
+            name:'',
+            type:'',
+            age:'',
+            country:'',
+            description:this.newartdescription
+
+          },
+          success:(data)=>{
+
+            var art = JSON.stringify(data)//test json
+            this.artifacts = data;
+            const parsed = JSON.stringify(this.artifacts);
+            localStorage.setItem('artifacts',parsed);
+            if (this.toprice==9999999) {
+              this.toprice = '';
+            }
+
+
+          },
+          error: (msg)=> {
+            console.log(msg.responseText);
+            console.log(msg.status);
+            self.errormsg = 'Сервер передал: '+ JSON.parse(msg.responseText).error;
+          }
+        });
+      }
     }
 
   }
@@ -402,11 +467,33 @@
     color: white;
   }
 
+  /*.shortdescription{*/
+    /*white-space: nowrap;*/
+    /*overflow: hidden !important;*/
+    /*text-overflow: ellipsis;*/
+    /*height: 80px;*/
+  /*}*/
+  .shortdescription {
+    white-space: nowrap; /* Отменяем перенос текста */
+    overflow: hidden; /* Обрезаем содержимое */
+    padding: 5px; /* Поля */
+    text-overflow: ellipsis; /* Многоточие */
+  }
+  .shortdescription:hover {
+    background: #f0f0f0; /* Цвет фона */
+    white-space: normal; /* Обычный перенос текста */
+  }
+
 
   #artifact{
     color: lightgray;
   }
+
   .artifacts {
+    padding: 15px;
+    background: #1b1e23;
+  }
+  .createart{
     padding: 15px;
     background: #1b1e23;
   }

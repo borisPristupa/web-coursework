@@ -48,7 +48,7 @@
                 <input v-model="user.bio">
 
               </div>
-              <button class="align-content-center bg-danger" id="exitbtn" @click="exit">Выход</button>
+              <button class="align-content-center btn btn-info" id="exitbtn" @click="exit">Выход</button>
 
             </div>
           </div>

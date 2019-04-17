@@ -6,7 +6,13 @@
       <h4 class="p-0 m-0 col-12 col-sm-9 col-md-9 col-lg-10" @click="showchatinfo">{{chat.name}}</h4>
       <!--<button @click="addhuman">Добавить участника</button>-->
     </div>
+    <!--<div class="d-none">-->
+      <!--{{thischat = this.chat}}-->
+    <!--</div>-->
+    {{this.chat.id}}
+
     <div v-if="!ischatinfo">
+
       <div class="col-12 ">
         <a v-for="msg in allmessages.slice().reverse()">
           <br><small class="h6">{{findusername(msg)}}:{{msg.date}}</small><br>
@@ -36,17 +42,41 @@
   var $ = require('jquery');
   window.jQuery = $; //для подкл jquery
 
+
   export default {
     name:'Openconv',
+    props:['chat','messages'],
     components:{
       $,
     },
+    data(){
+      alert('rr')
+      var oldid = this.chat.id;
+
+      return{
+        thischat:this.chat,
+
+        user:{},
+
+        allmessages:[],
+
+
+        message:'',
+
+        ischatinfo:false,
+
+      }
+
+    },
     created(){
+
       // alert('test')
-      var chat = JSON.parse(localStorage.getItem('thischat'));
-      this.chat = chat;
+      // var chat = JSON.parse(localStorage.getItem('thischat'));
+      // this.chat = chat;
+      // this.thischat = chat;
       var user = JSON.parse(localStorage.getItem('client'));
       this.user = user;
+      alert(this.thischat.id);
 
       $.ajax({
         type:'GET',
@@ -71,51 +101,34 @@
       // alert('test')
 
     },
-    data(){
-      return{
-
-        chat:{},
-
-        user:{},
-
-        allmessages:[],
-
-
-        message:'',
-
-        ischatinfo:false,
-
-      }
-
-    },
     methods:{
-      // hook(){
-      //   var chat = JSON.parse(localStorage.getItem('chat'));
-      //   this.chat = chat;
-      //   var user = JSON.parse(localStorage.getItem('client'));
-      //   this.user = user;
-      //
-      //   $.ajax({
-      //     type:'GET',
-      //     url:'http://localhost:8181/message',
-      //     xhrFields: {withCredentials: true},
-      //     data:{
-      //       chat_id: this.chat.id,
-      //       // amount:'',
-      //       // page:''
-      //     },
-      //     success:(data)=>{
-      //       // var time = data.date;
-      //       this.allmessages = data;
-      //       console.log(this.allmessages)
-      //       // this.allmessages.date = time.replace(/.{12}$/, '').replace( /[T]/,' ');
-      //     },
-      //     error:(msg)=>{
-      //       console.log(msg.responseText);
-      //       console.log(msg.status);
-      //     }
-      //   })
-      // },
+      hook(){
+        var chat = JSON.parse(localStorage.getItem('chat'));
+        this.chat = chat;
+        var user = JSON.parse(localStorage.getItem('client'));
+        this.user = user;
+
+        $.ajax({
+          type:'GET',
+          url:'http://localhost:8181/message',
+          xhrFields: {withCredentials: true},
+          data:{
+            chat_id: chat.id,
+            // amount:'',
+            // page:''
+          },
+          success:(data)=>{
+            // var time = data.date;
+            this.allmessages = data;
+            console.log(this.allmessages)
+            // this.allmessages.date = time.replace(/.{12}$/, '').replace( /[T]/,' ');
+          },
+          error:(msg)=>{
+            console.log(msg.responseText);
+            console.log(msg.status);
+          }
+        })
+      },
       findusername(msg){
 
         var time = msg.date;

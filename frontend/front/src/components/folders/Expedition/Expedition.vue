@@ -70,7 +70,7 @@
       <div id="bystate" class="searchblock d-flex flex-column">
         <p>Поиск по состоянию</p>
         <a v-for="state in states">
-          <input  type="checkbox" @change="findexp"  :value="state" v-model="checkedstates" >{{state}}
+          <input type="checkbox" @change="findexp" name="www" :value="state" v-model="checkedstates" >{{state}}
         </a>
       </div>
 
@@ -79,7 +79,7 @@
 
 
       <div class="col-12 col-md-9">
-        <div v-if="iscreateexp" class="col-12 p-3 d-none d-md-block">
+        <div v-if="iscreateexp" class="col-12 p-3 d-none d-md-block bg-dark mt-3">
           <button @click="iscreateexppage">Назад</button>
 
 
@@ -95,14 +95,13 @@
               Имя:<input v-model="expeditionnew.name">
 
 
-              <h4 class="ml-auto">Статус: {{expeditionnew.stage}}</h4>
-
             </div>
               Полная сумма:<input type="number" v-model="expeditionnew.fullpricenew" >$
             <br>
 
 
               Описание:<textarea class="col-12" v-model="expeditionnew.description"></textarea>
+          {{errormsg}}
 
           <button @click="createexp">Создать</button>
 
@@ -225,11 +224,11 @@
             description: this.expeditionnew.description,
           },
           success:(data)=>{
-            alert('test');
             this.iscreateexp = false;
 
           },
           error:(msg)=>{
+            this.errormsg = msg.responseText;//TODO по возможности обработать
             console.log(msg.responseText);
             console.log(msg.status);
           }
@@ -238,7 +237,6 @@
       },
 
       getstates(){
-        console.log('test');
         $.ajax({
           type:'GET',
           url:'http://localhost:8181/stage',

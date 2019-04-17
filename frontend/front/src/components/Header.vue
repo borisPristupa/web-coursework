@@ -50,7 +50,7 @@ import Help from './folders/Help/Help';
     data(){
       return{
         BT:'http://se.ifmo.ru',
-        component:'', //default component
+        component:'Own', //default component
         buttons:[
           {name:'People',
           title:'Люди'},
@@ -71,7 +71,7 @@ import Help from './folders/Help/Help';
         console.log(comp);
         localStorage.setItem('component',comp);
         // component= button.name;
-        console.log(component);
+        // console.log(component);
       }
     }
   }

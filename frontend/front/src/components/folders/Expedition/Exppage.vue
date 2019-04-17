@@ -83,7 +83,26 @@
     methods:{
       hook(){
         var exp = JSON.parse(localStorage.getItem('exppage'));
+
+        $.ajax({
+          type:'GET',
+          url:'http://localhost:8181/expedition',
+          xhrFields: {withCredentials: true},
+          data:{
+            id:exp.id
+          },
+          success:(data)=>{
+            this.expedition = data;
+          },
+          error:(msg)=>{
+            console.log(msg.responseText);
+            console.log(msg.status);
+          }
+
+        });
+
         this.expedition = exp;
+
 
         var owner = JSON.parse(sessionStorage.getItem('client'));
         if (owner.login === exp.head.username){
@@ -92,6 +111,7 @@
       },
       donate(){
         $.ajax({
+          async:false,
           type:'POST',
           url:'http://localhost:8181/expedition/donate',
           xhrFields: {withCredentials: true},
@@ -108,14 +128,13 @@
             console.log(msg.status);
           }
 
-        })
+        });
         this.hook();
       },
       edit(){//TODO доделать
         if (this.isedit == true){
 
           var exp = JSON.parse(localStorage.getItem('exppage'));
-          alert(exp)
           $.ajax({
             async:false,
             type: 'PATCH',
@@ -130,7 +149,7 @@
               //full_sum:''
             },
             success:()=>{
-              alert('new name: ' + this.expedition.name)
+              alert('изменения успешны')
             },
             error:(msg)=>{
               console.log(msg.responseText);

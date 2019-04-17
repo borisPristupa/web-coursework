@@ -28,6 +28,7 @@
     <div class="col-12 d-flex justify-content-center">
       <button class="col-4 signbtn" @keyup.enter="reg_in" @click="reg_in">Регистрация</button>
     </div>
+    <h4 class="text-danger">{{errormsg}}</h4>
   </div>
 
 </template>
@@ -86,7 +87,7 @@
         this.$emit('getinfo',this.aut)
       },
       reg_in:function () {
-        this.same_pass;
+        // this.same_pass;
 
         this.setuserdata()
       },
@@ -116,13 +117,16 @@
 
           success: function(data){
             const parsed = JSON.stringify(data);
-            localStorage.setItem('client',parsed)
-            alert('Вы успешно зарегестрировались!')
+            localStorage.setItem('client',parsed);
+            alert('Вы успешно зарегестрировались!');
             self.aut.hasAccess = true;
             sessionStorage.setItem('client',JSON.stringify(self.aut.hasAccess));
 
           },
           error: (msg)=> {
+            // if (msg.status == 409) {
+            //   this.errormsg = JSON.parse(msg.responseText).error;
+            // }
             console.log(msg.responseText);
             console.log(msg.status);
 

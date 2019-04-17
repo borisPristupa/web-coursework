@@ -12,8 +12,8 @@
 
       <input type="number" v-model="new_bet"> USD <a @click="rate" class="btn-3d red">Ставка</a>
       <!--@change="validate"-->
-      <p>{{errormsg}}</p>
-      {{new_bet}}
+      <p class="text-danger">{{errormsg}}</p>
+      <p class="text-success">{{msss}}</p>
     </div>
 
 
@@ -83,6 +83,8 @@
 
         errormsg:'',
 
+        msss:'',
+
       }
     },
     methods:{
@@ -90,16 +92,32 @@
         // alert('test')
 
         var art = JSON.parse(localStorage.getItem('artpage'));
+        $.ajax({
+          async:false,
+          type: 'GET',
+          url: 'http://localhost:8181/artifact',
+          xhrFields: {withCredentials: true},
+          data:{
+            id:art.id,
+          },
+          success:(data)=>{
+            this.artifact = data;
 
-        var time = art.auction.start_time;
-        art.auction.start_time = time.replace(/.{12}$/, '').replace( /[T]/,' ');
+            // alert('обновлено!')
+          },
+          error:(msg)=>{
+            this.artifact = art;
+            console.log(msg.responseText);
+            console.log(msg.status);
+          }
+        });
 
-        var time = art.auction.end_time;
-        art.auction.end_time = time.replace(/.{12}$/, '').replace( /[T]/,' ');
 
-        console.log(art.auction.price_old);
-        this.artifact = art;
+        var time = this.artifact.auction.start_time;
+        this.artifact.auction.start_time = time.replace(/.{12}$/, '').replace( /[T]/,' ');
 
+        var time = this.artifact.auction.end_time;
+        this.artifact.auction.end_time = time.replace(/.{12}$/, '').replace( /[T]/,' ');
 
 
         var owner = JSON.parse(sessionStorage.getItem('client'));
@@ -135,7 +153,7 @@
             value: this.new_bet,
           },
           success:()=>{
-            alert('ставка сделана!')
+            this.msss = 'ставка сделана!'
           },
           error:(msg)=>{
             if (msg.status == 500) {
@@ -146,6 +164,7 @@
             console.log(msg.status);
           }
         });
+        this.hook();
       },
       edit(){//TODO доделать
         if (this.isedit == true){
