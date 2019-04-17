@@ -1,6 +1,7 @@
 package com.ifmo.web.coursework.webservices.controller;
 
 import com.ifmo.web.coursework.data.entity.Chat;
+import com.ifmo.web.coursework.data.entity.Human;
 import com.ifmo.web.coursework.data.repository.ChatRepository;
 import com.ifmo.web.coursework.data.repository.HumanRepository;
 import com.ifmo.web.coursework.data.utils.FilterUtils;
@@ -49,6 +50,16 @@ public class ChatController {
 //                .sorted(Comparator
 //                        .<ChatResponse, Timestamp>comparing(chat -> chat.getLast_message().getDate())
 //                        .reversed())
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/members")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Integer> getMembers(@RequestParam("chat_id") Integer chatId) {
+        return chatRepository.findById(chatId).orElseThrow(() ->
+                new NotFoundException("Chat not found by id '" + chatId + "'"))
+                .getMembers().stream()
+                .map(Human::getHumanId)
                 .collect(Collectors.toList());
     }
 
@@ -107,7 +118,8 @@ public class ChatController {
     @Log
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping
-    public ChatResponse editChat(ChatResponse chatResponse) {
+    public ChatResponse editChat(ChatResponse chatResponse,
+                                 @RequestParam("members[]") List<Integer> members) {
         if (null == chatResponse.getId()) throw new MissingRequiredArgumentException("id");
 
         Chat chat = chatRepository.findById(chatResponse.getId()).orElseThrow(() ->
@@ -119,16 +131,14 @@ public class ChatController {
         if (null != chatResponse.getName())
             chat.setName(chatResponse.getName());
 
-//        if (null != chatResponse.getMembers()) {
-//            chatResponse.getMembers().forEach(humanResponse -> {
-//                if (chat.getMembers().stream().noneMatch(human -> human.getHumanId().equals(humanResponse)))
-//                    chatRepository.addMember(chat.getChatId(), humanResponse);
-//            });
-//            chat.getMembers().forEach(human -> {
-//                if (chatResponse.getMembers().stream().noneMatch(humanResponse -> human.getHumanId().equals(humanResponse)))
-//                    chatRepository.removeMember(chat.getChatId(), human.getHumanId());
-//            });
-//        }
+        members.forEach(humanResponse -> {
+            if (chat.getMembers().stream().noneMatch(human -> human.getHumanId().equals(humanResponse)))
+                chatRepository.addMember(chat.getChatId(), humanResponse);
+        });
+        chat.getMembers().stream().map(Human::getHumanId).forEach(humanId -> {
+            if (!members.contains(humanId))
+                chatRepository.removeMember(chat.getChatId(), humanId);
+        });
 
         chatRepository.save(chat);
         chat.setMembers(humanRepository.findAllByChatId(chat.getChatId()));
