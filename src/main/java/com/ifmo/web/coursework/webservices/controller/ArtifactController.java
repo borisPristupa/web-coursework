@@ -94,10 +94,10 @@ public class ArtifactController {
         created.setHumanByOwner(humanUtils.getCurrentHuman());
         created.setApproved(false);
 
-        if (Boolean.TRUE.equals(humanUtils.getCurrentHuman().getResearcher())) {
+//        if (Boolean.TRUE.equals(humanUtils.getCurrentHuman().getResearcher())) {
             created.setApproved(true);
             created.setHumanByApprover(humanUtils.getCurrentHuman());
-        }
+//        }
 
         artifactRepository.save(created);
         artifactRepository.flush();

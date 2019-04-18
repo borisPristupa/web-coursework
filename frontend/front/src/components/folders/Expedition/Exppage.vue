@@ -104,8 +104,8 @@
         this.expedition = exp;
 
 
-        var owner = JSON.parse(sessionStorage.getItem('client'));
-        if (owner.login === exp.head.username){
+        var owner = JSON.parse(localStorage.getItem('client'));
+        if (owner.id === this.expedition.head_id){
           this.isowner = true;
         }
       },

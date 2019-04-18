@@ -4,6 +4,7 @@ import com.ifmo.web.coursework.data.entity.Chat;
 import com.ifmo.web.coursework.data.entity.Human;
 import com.ifmo.web.coursework.data.entity.Message;
 import com.ifmo.web.coursework.data.repository.ChatRepository;
+import com.ifmo.web.coursework.data.repository.HumanRepository;
 import com.ifmo.web.coursework.data.repository.MessageRepository;
 import com.ifmo.web.coursework.data.utils.HumanUtils;
 import com.ifmo.web.coursework.log.Log;
@@ -28,6 +29,7 @@ public class MessageController {
     private final MessageRepository messageRepository;
     private final HumanUtils humanUtils;
     private final ChatRepository chatRepository;
+    private final HumanRepository humanRepository;
 
     private final CustomJMSSender jms;
 
@@ -69,14 +71,15 @@ public class MessageController {
         message.setDate(messageResponse.getDate());
         messageRepository.save(message);
 
-        chat.getMembers().stream()
-                .filter(human -> !human.getHumanId().equals(message.getHumanId()))
+        humanRepository.findAllByChatId(chat.getChatId()).stream()
+                .filter(human -> !human.getHumanId().equals(humanUtils.getCurrentId()))
                 .map(Human::getEmail)
                 .forEach(email -> jms.send(CustomJMSSender.MAIL,
                         com.ifmo.web.coursework.notification.Message.builder()
                                 .to(email)
                                 .subject("Chat " + chat.getName())
-                                .text("%s sent a message at chat '%s'! \n" +
+                                .text(String.format("%s sent a message at chat '%s'! \n",
+                                        humanUtils.getCurrentLogin(), chat.getName()) +
                                         "Don't miss important news about archaeology\n" +
                                         "Why not?\n" +
                                         "Just don't")
@@ -86,10 +89,11 @@ public class MessageController {
     }
 
     @Autowired
-    public MessageController(MessageRepository messageRepository, HumanUtils humanUtils, ChatRepository chatRepository, CustomJMSSender jms) {
+    public MessageController(MessageRepository messageRepository, HumanUtils humanUtils, ChatRepository chatRepository, HumanRepository humanRepository, CustomJMSSender jms) {
         this.messageRepository = messageRepository;
         this.humanUtils = humanUtils;
         this.chatRepository = chatRepository;
+        this.humanRepository = humanRepository;
         this.jms = jms;
     }
 }

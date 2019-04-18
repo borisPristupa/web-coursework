@@ -2,7 +2,7 @@
 <template>
   <div id="artpage" class="container-12 d-flex flex-column flex-md-row bg-dark">
 
-    <div class="col-8 col-sm-8 col-md-4 col-lg-3 align-self-center">
+    <div v-if="this.artifact.auction" class="col-8 col-sm-8 col-md-4 col-lg-3 align-self-center">
       Аукцион
       <p>{{this.artifact.auction.start_time}}=>{{this.artifact.auction.end_time}}</p>
       <!--<button @click="subscribe">Подписаться</button>-->
@@ -13,7 +13,6 @@
       <input type="number" v-model="new_bet"> USD <a @click="rate" class="btn-3d red">Ставка</a>
       <!--@change="validate"-->
       <p class="text-danger">{{errormsg}}</p>
-      <p class="text-success">{{msss}}</p>
     </div>
 
 
@@ -29,14 +28,26 @@
           <div v-if="!isedit">
             <h3>{{this.artifact.name}}</h3>
           </div>
-
           <div v-else>
             <input v-model="this.artifact.name">
+          </div>
+
+          <div v-if="!isedit">
+            <h3>{{this.artifact.type}}</h3>
+          </div>
+
+          <!--<div v-if="!isedit">-->
+            <!--<h3 v-if="this.artifact.approved">Подтвердил:{{this.artifact.approver.first_name}} {{this.artifact.approver.second_name}}</h3>-->
+          <!--</div>-->
+
+          <div v-if="!isedit">
+            <h3>Владелец:{{this.artifact.owner.first_name}} {{this.artifact.owner.second_name}}</h3>
           </div>
 
           <div v-if="isowner" class="ml-auto">
             <img @click="edit" src="../../../img/edit.png" width="50px" height="50px">
           </div>
+          <!--<div v-if="ismoderator&&isresearcher"></div>-->
 
         </div>
 
@@ -83,8 +94,6 @@
 
         errormsg:'',
 
-        msss:'',
-
       }
     },
     methods:{
@@ -112,12 +121,15 @@
           }
         });
 
+        if (this.artifact.auction) {
+          var time = this.artifact.auction.start_time;
+          this.artifact.auction.start_time = time.replace(/.{12}$/, '').replace( /[T]/,' ');
 
-        var time = this.artifact.auction.start_time;
-        this.artifact.auction.start_time = time.replace(/.{12}$/, '').replace( /[T]/,' ');
+          var time = this.artifact.auction.end_time;
+          this.artifact.auction.end_time = time.replace(/.{12}$/, '').replace( /[T]/,' ');
+        }
 
-        var time = this.artifact.auction.end_time;
-        this.artifact.auction.end_time = time.replace(/.{12}$/, '').replace( /[T]/,' ');
+
 
 
         var owner = JSON.parse(sessionStorage.getItem('client'));
@@ -153,7 +165,7 @@
             value: this.new_bet,
           },
           success:()=>{
-            this.msss = 'ставка сделана!'
+            this.errormsg = 'ставка сделана!'
           },
           error:(msg)=>{
             if (msg.status == 500) {

@@ -10,6 +10,7 @@ import com.ifmo.web.coursework.webservices.exception.MissingRequiredArgumentExce
 import com.ifmo.web.coursework.webservices.exception.NotFoundException;
 import com.ifmo.web.coursework.webservices.response.DonationResponse;
 import com.ifmo.web.coursework.webservices.response.ExpeditionResponse;
+import com.ifmo.web.coursework.webservices.response.HumanResponse;
 import com.ifmo.web.coursework.webservices.response.SuccessResponse;
 import lombok.ToString;
 import org.slf4j.Logger;
@@ -60,7 +61,8 @@ public class ExpeditionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ExpeditionResponse add(ExpeditionResponse expeditionResponse) {
+    public ExpeditionResponse add(ExpeditionResponse expeditionResponse,
+                                  @RequestParam("members_id[]") List<Integer> members) {
         ArrayList<String> missing = new ArrayList<>();
         if (null == expeditionResponse.getName())
             missing.add("name");
@@ -84,8 +86,22 @@ public class ExpeditionController {
         created.setDescription(expeditionResponse.getDescription());
         created.setHumanByHead(humanUtils.getCurrentHuman());
 
+
         try {
             expeditionRepository.save(created);
+
+            members.add(humanUtils.getCurrentId());
+            members.stream()
+                    .map(humanRepository::getOne)
+                    .filter(Objects::nonNull)
+                    .forEach(human -> {
+                        ParticipationExpedition pe = new ParticipationExpedition();
+                        pe.setDate(Date.valueOf(LocalDate.now()));
+                        pe.setExpeditionByExpeditionId(
+                                expeditionRepository.findOne(Example.of(created)).orElse(created));
+                        pe.setHumanByHumanId(human);
+                        participationRepository.save(pe);
+                    });
         } catch (Exception e) {
             Logger logger = LoggerFactory.getLogger(ExpeditionController.class);
             logger.error("WTF", e);
@@ -133,6 +149,18 @@ public class ExpeditionController {
                         .collect(Collectors.toList())
         );
         return ExpeditionResponse.fromExpedition(expedition);
+    }
+
+    @GetMapping("/members")
+    @ResponseStatus(HttpStatus.OK)
+    public List<HumanResponse> getMembers(@RequestParam("expedition_id") Integer expeditionId) {
+        return expeditionRepository.findById(expeditionId).orElseThrow(() ->
+                new NotFoundException("Expedition not found by id '" + expeditionId + "'"))
+                .getParticipationExpeditionsByExpeditionId()
+                .stream()
+                .map(ParticipationExpedition::getHumanByHumanId)
+                .map(HumanResponse::fromHuman)
+                .collect(Collectors.toList());
     }
 
     @Log.Exclude
